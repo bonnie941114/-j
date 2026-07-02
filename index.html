@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHIBA 2026 日本海外實習控制台</title>
+<style>
+/* ── 舒適生產力美學：深海藍灰 + 琥珀黃 + 銀色科技幾何裝飾 ── */
+:root {
+  --bg: #0f172a; 
+  --bg-panel: #1e293b; 
+  --bg-hover: #334155; 
+  --line: rgba(255,255,255,0.08); 
+  --line-s: rgba(255,255,255,0.15); 
+  
+  --t0: #f8fafc; 
+  --t1: #cbd5e1; 
+  --t2: #94a3b8; 
+  
+  --accent: #fbbf24; 
+  --accent-l: rgba(251,191,36,0.15); 
+  --silver: #c0c0c0; 
+  --silver-d: rgba(192,192,192,0.2);
+
+  --green: #10b981; 
+  --blue: #0ea5e9; 
+  --purple: #8b5cf6; 
+  --danger: #f43f5e; 
+  
+  --r: 8px; --r-lg: 16px; 
+  --shadow: 0 4px 6px -1px rgba(0,0,0,.3),0 2px 4px -1px rgba(0,0,0,.15); 
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,.5),0 4px 10px -2px rgba(0,0,0,.3); 
+  
+  --qi: #0ea5e9; --qi-bg: rgba(14,165,233,0.08); 
+  --vi: #fbbf24; --vi-bg: rgba(251,191,36,0.08); 
+  --cut: #8b5cf6; --cut-bg: rgba(139,92,246,0.08); 
+  --all: #10b981; --all-bg: rgba(16,185,129,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  background-color: var(--bg); color: var(--t1); 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; 
+  font-size: 14px; line-height: 1.6; height: 100vh; overflow: hidden; 
+  background-image: 
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 8px; }
+input, select, textarea, button { font-family: inherit; font-size: inherit; color: inherit; outline: none; }
+button { cursor: pointer; transition: all .2s; }
+
+.silver-decor { position: relative; }
+.silver-decor::before { content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: var(--silver); border-top-left-radius: var(--r-lg); }
+.silver-decor::after { content: ''; position: absolute; bottom: 0; right: 0; width: 30px; height: 2px; background: var(--silver); border-bottom-right-radius: var(--r-lg); }
+
+/* ── 登入 ── */
+.login-wrap { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card { background: var(--bg-panel); width: 520px; max-width: 100%; padding: 40px; border-radius: var(--r-lg); border: 1px solid var(--line-s); box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden; }
+.login-title { font-size: 22px; font-weight: 800; color: var(--t0); margin-bottom: 6px; letter-spacing: .04em; }
+.login-sub { color: var(--t2); font-size: 13px; margin-bottom: 28px; }
+.login-divider { font-size: 11px; color: var(--silver); font-weight: 700; letter-spacing: .06em; margin-bottom: 14px; text-transform: uppercase; }
+.char-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.char-btn { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 6px; cursor: pointer; transition: all .18s; position: relative; }
+.char-name { font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 3px; }
+.char-role { font-size: 10px; color: var(--t2); font-weight: 600; }
+.char-btn:hover { border-color: var(--silver); transform: translateY(-2px); }
+.char-btn.selected { border-color: var(--accent); background: var(--accent-l); box-shadow: 0 0 10px var(--accent-l); }
+.char-btn.selected .char-name { color: var(--accent); }
+.pw-mask { position: absolute; inset: 0; background: rgba(15,23,42,.96); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; padding: 30px; }
+.pw-mask.active { opacity: 1; pointer-events: auto; }
+.pw-input { background: var(--bg-panel); border: 2px solid var(--accent); color: var(--t0); font-size: 24px; letter-spacing: .25em; text-align: center; padding: 12px; border-radius: var(--r); width: 80%; margin: 18px 0; font-weight: bold; }
+.pw-actions { display: flex; gap: 10px; width: 80%; }
+.btn-primary { background: var(--accent); color: #000; font-weight: 700; border: none; padding: 10px 16px; border-radius: var(--r); flex: 1; }
+.btn-primary:hover { background: #fcd34d; }
+.btn-secondary { background: var(--bg-hover); color: var(--t1); border: none; padding: 10px 16px; border-radius: var(--r); flex: 1; }
+.guest-link { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--silver); text-decoration: underline; cursor: pointer; }
+
+/* ── 靜態提醒橫幅 ── */
+.static-alert-bar { background: var(--bg-panel); border-bottom: 1px solid var(--line-s); padding: 12px 24px; display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
+.alert-box { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+.alert-icon { font-size: 18px; }
+.alert-text { font-size: 12px; font-weight: 600; color: var(--t1); line-height: 1.4; }
+.alert-text strong { color: var(--accent); font-weight: 800; }
+
+/* ── 框架 ── */
+.app { display: flex; height: calc(100vh - 66px); } 
+.sidebar { width: 240px; background: var(--bg-panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
+.sb-header { padding: 20px; border-bottom: 1px solid var(--line); }
+.sb-logo { font-size: 15px; font-weight: 800; color: var(--t0); display: flex; align-items: center; gap: 10px; }
+.sb-logo-icon { background: var(--accent); color: #000; width: 30px; height: 30px; border-radius: var(--r); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11px; flex-shrink: 0; }
+.sb-user { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 10px; padding-left: 40px; }
+.sb-scope-badge { margin: 12px 16px 0; padding: 8px 12px; border-radius: var(--r); font-size: 12px; font-weight: 700; text-align: center; border: 1px solid; }
+.nav-menu { padding: 14px 12px; flex: 1; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 11px 14px; color: var(--t2); border-radius: var(--r); font-weight: 600; margin-bottom: 3px; border-left: 3px solid transparent; background: transparent; width: 100%; text-align: left; font-size: 13px; }
+.nav-item:hover { color: var(--t0); background: var(--bg-hover); }
+.nav-item.active { color: var(--accent); background: var(--accent-l); border-left-color: var(--accent); }
+
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar { height: 60px; background: var(--bg-panel); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; flex-shrink: 0; }
+.page-title { font-size: 17px; font-weight: 700; color: var(--t0); display: flex; align-items: center; gap: 8px;}
+.content { flex: 1; padding: 28px; overflow-y: auto; }
+.section { display: none; animation: fadeIn .2s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+/* ── 進度區與里程碑 ── */
+.dash-prog-wrap { background: var(--bg-panel); padding: 22px 26px; border-radius: var(--r-lg); border: 1px solid var(--line); box-shadow: var(--shadow); margin-bottom: 22px; }
+.dp-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+.dp-title { font-size: 16px; font-weight: 800; color: var(--t0); }
+.dp-pct { font-size: 28px; font-weight: 900; color: var(--accent); line-height: 1; }
+.track-lg { height: 14px; background: var(--bg); border-radius: 8px; overflow: hidden; display: flex; border: 1px solid var(--line-s); }
+.fill-lg { height: 100%; transition: width .6s ease; }
+.milestone-tracker { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.ms-item { flex: 1; background: var(--bg); padding: 12px; border-radius: var(--r); border: 1px solid var(--line); text-align: center; }
+.ms-item.done { border-color: var(--green); background: rgba(16,185,129,0.05); }
+.ms-title { font-size: 12px; font-weight: 700; color: var(--t0); margin-bottom: 4px; }
+.ms-status { font-size: 11px; color: var(--t2); }
+.ms-item.done .ms-status { color: var(--green); font-weight: 700; }
+
+/* ── 篩選列與視圖 ── */
+.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: var(--bg-panel); padding: 14px 20px; border-radius: var(--r-lg); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.filter-search { background: var(--bg); border: 1px solid var(--line-s); color: var(--t0); padding: 8px 16px; border-radius: 99px; font-size: 13px; width: 210px; transition: border .2s; }
+.filter-search:focus { border-color: var(--accent); }
+.chip { background: var(--bg); border: 1px solid var(--line-s); color: var(--silver); padding: 6px 15px; border-radius: 99px; font-size: 12px; font-weight: 700; transition: all .15s; }
+.chip.active { background: var(--accent-l); color: var(--accent); border-color: var(--accent); }
+.view-toggles { margin-left: auto; display: flex; background: var(--bg); border: 1px solid var(--line-s); border-radius: var(--r); overflow: hidden; }
+.v-btn { background: transparent; border: none; color: var(--t2); padding: 7px 15px; font-size: 12px; font-weight: 700; }
+.v-btn.active { background: var(--bg-hover); color: var(--t0); }
+
+/* ── 看板 ── */
+.board-view { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 14px; min-height: calc(100vh - 400px); }
+.board-view.hidden { display: none; }
+.col { background: var(--bg-panel); border-radius: var(--r-lg); width: 275px; flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid var(--line); }
+.col.drag-over { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-l); }
+.col-header { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.col-title { font-size: 13px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.col-count { background: var(--bg); padding: 2px 10px; border-radius: 12px; font-size: 12px; color: var(--t2); font-weight: 700; border: 1px solid var(--line-s); }
+.track-sm { height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.fill-sm { height: 100%; transition: width .4s ease; }
+.col-cards { padding: 14px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--bg); border: 1px solid var(--line-s); border-radius: var(--r); padding: 15px; cursor: grab; box-shadow: var(--shadow); transition: all .2s; position: relative; overflow: hidden; }
+.card:hover { border-color: var(--silver); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.card-indicator { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.card-header { display: flex; justify-content: space-between; margin-bottom: 11px; align-items: flex-start; }
+.c-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 4px; border: 1px solid; background: transparent; }
+.c-title { font-size: 13px; font-weight: 600; color: var(--t0); margin-bottom: 14px; line-height: 1.55; }
+.c-footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--t2); align-items: center; font-weight: 600; }
+
+/* ── 列表視圖 ── */
+.list-view { display: none; }
+.list-view.active { display: block; }
+.list-week-label { font-size: 12px; font-weight: 800; color: var(--silver); margin: 22px 0 11px; display: flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.list-week-label::after { content: ''; flex: 1; height: 1px; background: var(--line-s); }
+.list-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 18px; align-items: center; background: var(--bg-panel); border: 1px solid var(--line); padding: 14px 22px; border-radius: var(--r); margin-bottom: 7px; transition: all .15s; }
+.list-row:hover { transform: translateX(4px); border-color: var(--silver); }
+
+/* ── 表單通用 ── */
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; font-size: 12px; color: var(--t2); margin-bottom: 5px; font-weight: 600; }
+.input-box { width: 100%; background: var(--bg); border: 1px solid var(--line-s); color: var(--t0); padding: 9px 13px; border-radius: var(--r); transition: border .2s; font-size: 13px; }
+.input-box:focus { border-color: var(--accent); }
+.btn-ghost { background: transparent; border: 1px solid var(--line-s); color: var(--t1); padding: 8px 16px; border-radius: var(--r); font-weight: 600; }
+.btn-ghost:hover { background: var(--bg-hover); color: var(--t0); border-color: var(--silver); }
+.btn-danger { background: rgba(244,63,94,.1); color: var(--danger); border: 1px solid rgba(244,63,94,.3); padding: 5px 11px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+.btn-danger:hover { background: var(--danger); color: #fff; }
+.btn-icon { background: transparent; border: none; color: var(--t2); padding: 4px; border-radius: 4px; font-size: 15px; }
+.btn-icon:hover { background: var(--bg-hover); color: var(--t0); }
+
+/* ── 面板與分頁 ── */
+.panel-wrap { display: grid; grid-template-columns: 310px 1fr; gap: 22px; }
+.panel-box { background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; box-shadow: var(--shadow); }
+.tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.tab-btn { padding: 10px 18px; background: transparent; border: none; color: var(--t2); font-weight: 600; cursor: pointer; position: relative; font-size: 13px; }
+.tab-btn.active { color: var(--accent); }
+.tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); }
+.tab-content { display: none; animation: fadeIn .2s ease; }
+.tab-content.active { display: block; }
+.secret-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+
+/* ── Modals ── */
+.del-mask, .modal-mask { position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 8000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.del-mask.show, .modal-mask.show { display: flex; }
+.del-box { background: var(--bg-panel); border: 2px solid var(--danger); padding: 40px; border-radius: var(--r-lg); text-align: center; width: 440px; box-shadow: 0 0 40px rgba(244,63,94,0.2); }
+.modal-content { background: var(--bg-panel); border: 1px solid var(--line-s); padding: 32px; border-radius: var(--r-lg); width: 460px; box-shadow: var(--shadow-lg); animation: fadeIn 0.2s ease; }
+.cd-text { font-size: 56px; font-weight: 900; color: var(--danger); margin: 20px 0; line-height: 1; }
+.modal-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.modal-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.toast-container { position: fixed; bottom: 32px; right: 32px; display: flex; flex-direction: column; gap: 12px; z-index: 10000; }
+.toast { background: var(--bg-panel); border-left: 4px solid var(--accent); padding: 16px 24px; border-radius: var(--r); box-shadow: var(--shadow-lg); color: var(--t0); font-weight: 600; transform: translateX(120%); transition: transform 0.3s; }
+.toast.show { transform: translateX(0); }
+
+/* 匯出預覽區 */
+.export-preview { background:#fff; border:1px solid #ccc; border-radius:4px; padding:24px; font-family:"標楷體","新細明體",serif; font-size:14px; color:#000; line-height:1.8; max-height:45vh; overflow-y:auto; margin-top:16px; position:relative; }
+</style>
+</head>
+<body>
+
+<!-- ══ 登入 ══ -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card silver-decor">
+    <div class="login-title">⚡ 控制基地驗證</div>
+    <div class="login-sub">CHIBA 2026 日本實習專案 · 選擇您的身分</div>
+    <div class="char-grid">
+      <button class="char-btn" onclick="selectChar('Boni',this)"><div class="char-name">Boni</div><div class="char-role">召集人・高管</div></button>
+      <button class="char-btn" onclick="selectChar('儒銘',this)"><div class="char-name">儒銘</div><div class="char-role">✍ 企劃組</div></button>
+      <button class="char-btn" onclick="selectChar('珀翊',this)"><div class="char-name">珀翊</div><div class="char-role">✍ 企劃組</div></button>
+      <button class="char-btn" onclick="selectChar('庭葦',this)"><div class="char-name">庭葦</div><div class="char-role">✍ 企劃組</div></button>
+      <button class="char-btn" onclick="selectChar('宜彥',this)"><div class="char-name">宜彥</div><div class="char-role">🎨 視覺組</div></button>
+      <button class="char-btn" onclick="selectChar('俊安',this)"><div class="char-name">俊安</div><div class="char-role">🎬 剪片組</div></button>
+      <button class="char-btn" onclick="selectChar('郁馨',this)"><div class="char-name">郁馨</div><div class="char-role">🎬 剪片組</div></button>
+      <button class="char-btn" onclick="selectChar('指導老師',this)"><div class="char-name">指導老師</div><div class="char-role">高管・審核</div></button>
+    </div>
+    <button class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="enterSystem()">進入系統</button>
+    <div class="guest-link" onclick="enterGuestMode()">👁 訪客預覽模式 (僅供展示瀏覽)</div>
+    
+    <div class="pw-mask" id="pwMask">
+      <h3 style="color:var(--t0);margin-bottom:6px;font-size:17px">🔒 高管身分鎖定</h3>
+      <div style="font-size:13px;color:var(--t2)">請輸入 Boni 專屬安全密碼解鎖權限</div>
+      <input type="password" class="pw-input" id="pwInput" placeholder="••••" maxlength="8" onkeydown="if(event.key==='Enter')verifyPw()">
+      <div class="pw-actions">
+        <button class="btn-secondary" onclick="closePwMask()">取消</button>
+        <button class="btn-primary" onclick="verifyPw()">安全解鎖</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastWrap"></div>
+
+<!-- 任務部署 Modal -->
+<div class="modal-mask" id="taskModal">
+  <div class="modal-content silver-decor">
+    <div class="modal-h">
+      <span style="font-size:16px;font-weight:800;color:var(--t0)">部署任務卡片</span>
+      <button class="btn-icon" onclick="closeTaskModal()">✕</button>
+    </div>
+    <input type="hidden" id="tkId">
+    <div class="input-group"><label>任務名稱</label><input class="input-box" id="tkTitle" placeholder="描述任務細節..."></div>
+    <div class="modal-2col">
+      <div class="input-group"><label>負責組別</label><select class="input-box" id="tkGroup"><option value="qi">企劃組</option><option value="vi">視覺組</option><option value="cut">剪片組</option><option value="all">全員配合</option></select></div>
+      <div class="input-group"><label>排定週次</label><select class="input-box" id="tkWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select></div>
+    </div>
+    <div class="modal-2col">
+      <div class="input-group"><label>負責人</label><input class="input-box" id="tkOwner" placeholder="如: 宜彥"></div>
+      <div class="input-group"><label>當前進度</label><select class="input-box" id="tkStatus"><option value="todo">未開始</option><option value="progress">進行中</option><option value="review">老師覆核</option><option value="done">已完成</option><option value="stuck">卡關阻礙</option></select></div>
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
+      <button class="btn-ghost" onclick="closeTaskModal()">取消</button>
+      <button class="btn-primary" onclick="saveTask()">確認寫入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 防呆刪除確認框 -->
+<div class="del-mask" id="delMask">
+  <div class="del-box">
+    <h3 style="color: var(--danger); font-size: 22px; margin-bottom: 16px;">⚠ 永久刪除確認</h3>
+    <div id="delMsg" style="color: var(--t1); font-size: 15px; margin-bottom: 16px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r); border: 1px solid var(--line);"></div>
+    <div class="cd-text" id="delCd">5</div>
+    <div style="font-size: 13px; color: var(--t2); margin-bottom: 24px; font-weight: 600;">資料銷毀後無法復原，請確認操作。</div>
+    <button class="btn-primary" style="width: 100%; font-size: 15px; padding: 14px;" onclick="cancelDelete()">↩ 立即挽救 (取消)</button>
+  </div>
+</div>
+
+<!-- 08_週報表匯出 Modal (精準對齊崑山格式) -->
+<div class="modal-mask" id="exportModal" onclick="if(event.target===this)document.getElementById('exportModal').classList.remove('show')">
+  <div class="modal-content silver-decor" style="width:640px;max-width:96%">
+    <div class="modal-h">
+      <span style="font-size:15px;font-weight:800;color:var(--t0)">📄 匯出崑山科大實習工作週報表</span>
+      <button class="btn-icon" onclick="document.getElementById('exportModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-2col">
+      <div class="input-group"><label>選擇人員</label><select class="input-box" id="expAuthor"></select></div>
+      <div class="input-group"><label>選擇週次</label><select class="input-box" id="expWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select></div>
+    </div>
+    <div style="font-size:12px; color:var(--accent); margin-bottom:10px;">💡 系統將自動撈取該組員於所選週次內標記為「已完成」的任務清單。</div>
+    <!-- 預覽區 -->
+    <div class="export-preview" id="exportPreview" style="display:none;margin-bottom:4px"></div>
+    <!-- 匯出按鈕群 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
+      <button class="btn-ghost" onclick="previewExport()" style="font-size:13px">👁 產生預覽</button>
+      <button class="btn-primary" id="btnExportWord" onclick="exportWord()" style="font-size:13px">⬇ 下載 Word (.doc)</button>
+      <button class="btn-primary" id="btnExportPdf" onclick="exportPdf()" style="background:var(--blue);font-size:13px">🖨 列印 / 另存 PDF</button>
+    </div>
+    <div style="font-size:11px;color:var(--t2);margin-top:10px;line-height:1.7">
+      ⚡ Word 格式：原生的 Doc 格式寫入技術，下載後直接用 Word 開啟，不跑版且包含浮水印。<br>
+      🖨 PDF 格式：包含完整浮水印，開啟列印對話框後，選擇「另存為 PDF」。
+    </div>
+  </div>
+</div>
+
+<!-- 主程式介面 -->
+<div class="static-alert-bar" id="alertBar">
+  <div class="alert-box">
+    <div class="alert-icon">🎟</div>
+    <div class="alert-text"><strong>迪士尼排程：</strong>搶票總指揮統一購票，清晨出發，提早 1.5 小時排隊。</div>
+  </div>
+  <div class="alert-box">
+    <div class="alert-icon">🏠</div>
+    <div class="alert-text"><strong>宿舍公約：</strong>衛浴限時，23:00 後禁洗衣機吹風機，確實執行垃圾分類。</div>
+  </div>
+  <div class="alert-box">
+    <div class="alert-icon">🎬</div>
+    <div class="alert-text"><strong>拍攝規定：</strong>Reels 拍攝日全員統一著白 T 色系服裝。外出拍攝須回報。</div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo"><div class="sb-logo-icon">JP</div>千言萬語葉葉精彩</div>
+      <div class="sb-user" id="currentUserDisplay">尚未登入</div>
+    </div>
+    <div id="scopeBadge"></div>
+    <nav class="nav-menu" id="navMenu"></nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title" id="pageTitle"><span id="pageTitleIcon" style="margin-right:8px">📊</span> <span id="pageTitleText">全景工作看板</span></div>
+      <div class="admin-hide" id="topAdminBtns" style="display: none;">
+        <button class="btn-ghost" style="margin-right: 8px;" onclick="copyStatus()">📢 複製進度播報</button>
+        <button class="btn-primary" onclick="openTaskModal()">＋ 部署新任務</button>
+      </div>
+    </header>
+    <div class="content">
+
+      <!-- 全景看板（Admin / Guest 看全部） -->
+      <section id="sec-kanban" class="section active">
+        <div class="dash-prog-wrap silver-decor">
+          <div class="dp-header">
+            <div class="dp-title">🎯 專案總體推進進度</div>
+            <div class="dp-pct" id="dashPct">0%</div>
+          </div>
+          <div class="track-lg">
+            <div class="fill-lg" id="fill-done" style="background: var(--green);"></div>
+            <div class="fill-lg" id="fill-prog" style="background: var(--blue);"></div>
+            <div class="fill-lg" id="fill-stuck" style="background: var(--danger);"></div>
+          </div>
+          <div class="milestone-tracker">
+            <div class="ms-item" id="ms-ch1"><div class="ms-title">第一章：提案與主題</div><div class="ms-status" id="ms-st-1">追蹤 W1/W2 進度...</div></div>
+            <div class="ms-item" id="ms-ch2"><div class="ms-title">第二章：視覺與宣傳</div><div class="ms-status" id="ms-st-2">追蹤 W3/W4 進度...</div></div>
+            <div class="ms-item" id="ms-ch3"><div class="ms-title">第三章：影音產出</div><div class="ms-status" id="ms-st-3">追蹤 W3/W4 進度...</div></div>
+            <div class="ms-item" id="ms-ch4"><div class="ms-title">第四章：總結報告</div><div class="ms-status" id="ms-st-4">追蹤 W7/W8 進度...</div></div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <input class="filter-search" id="kbSearch" placeholder="🔍 搜尋任務或負責人…" oninput="renderViews()">
+          <div style="display:flex;gap:7px" id="groupFilters"></div>
+          <div class="view-toggles">
+            <button class="v-btn active" onclick="setView('board',this)">看板模式</button>
+            <button class="v-btn" onclick="setView('list',this)">列表模式</button>
+          </div>
+        </div>
+        <div class="board-view" id="viewBoard">
+          <div class="col" id="col-todo" ondragover="allowDrop(event)" ondrop="handleDrop(event,'todo')"></div>
+          <div class="col" id="col-progress" ondragover="allowDrop(event)" ondrop="handleDrop(event,'progress')"></div>
+          <div class="col" id="col-review" ondragover="allowDrop(event)" ondrop="handleDrop(event,'review')"></div>
+          <div class="col" id="col-done" ondragover="allowDrop(event)" ondrop="handleDrop(event,'done')"></div>
+          <div class="col" id="col-stuck" ondragover="allowDrop(event)" ondrop="handleDrop(event,'stuck')"></div>
+        </div>
+        <div class="list-view" id="viewList"></div>
+      </section>
+
+      <!-- 我的工作區（組員專屬，已加回看板模式） -->
+      <section id="sec-mywork" class="section">
+        <div class="silver-decor" style="margin-bottom:18px;padding:16px 20px;background:var(--bg-panel);border-radius:var(--r-lg);border:1px solid var(--line)">
+          <div id="mywork-header" style="font-size:16px;font-weight:800;color:var(--t0);margin-bottom:5px"></div>
+          <div id="mywork-sub" style="font-size:13px;color:var(--t2)">這裡僅顯示您負責的組別任務及全員任務。在下方可直接更改任務狀態。</div>
+        </div>
+        <div class="dash-prog-wrap silver-decor" style="margin-bottom:18px">
+          <div class="dp-header" style="margin-bottom:12px">
+            <div class="dp-title" style="font-size:14px" id="mywork-prog-label">我的任務進度</div>
+            <div class="dp-pct" style="font-size:22px" id="mywork-pct">0%</div>
+          </div>
+          <div class="track-lg"><div class="fill-lg" id="mywork-fill" style="background:var(--green)"></div></div>
+        </div>
+        <div class="filter-bar">
+          <input class="filter-search" id="mySearch" placeholder="🔍 搜尋我的任務…" oninput="renderMyWork()">
+          <div class="view-toggles">
+            <button class="v-btn active" onclick="setMyView('board',this)">看板模式</button>
+            <button class="v-btn" onclick="setMyView('list',this)">列表模式</button>
+          </div>
+        </div>
+        <div id="mywork-board" class="board-view" style="min-height:300px"></div>
+        <div id="mywork-list" class="list-view"></div>
+      </section>
+
+      <!-- 會議記錄 -->
+      <section id="sec-meetings" class="section">
+        <div class="panel-wrap">
+          <div class="panel-box silver-decor admin-hide" id="meetingFormWrap" style="display:none;">
+            <h4 style="margin-bottom:16px;color:var(--t0);font-size:15px">✍ 新增會議與對帳</h4>
+            <div class="input-group"><label>標題</label><input class="input-box" id="mtgTitle" placeholder="W2 企劃覆盤…"></div>
+            <div class="input-group"><label>日期</label><input type="date" class="input-box" id="mtgDate"></div>
+            <div class="input-group"><label>內容（決議 / 公費核銷）</label><textarea class="input-box" id="mtgText" rows="7" placeholder="記錄重要決議、公費明細…"></textarea></div>
+            <button class="btn-primary" style="width:100%" onclick="addMeeting()">儲存紀錄</button>
+          </div>
+          <div class="panel-box" style="flex:1;">
+            <input class="input-box" id="mtgSearch" placeholder="🔍 搜尋會議關鍵字…" oninput="debounceSearchMtg()" style="margin-bottom:16px">
+            <div id="mtgList" style="display:flex;flex-direction:column;gap:14px;max-height:62vh;overflow-y:auto;padding-right:6px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 手札週記 -->
+      <section id="sec-diaries" class="section">
+        <div class="panel-wrap">
+          <div class="panel-box silver-decor guest-hide">
+            <h4 style="margin-bottom:16px;color:var(--t0);font-size:15px">✍ 申報本週實習手札</h4>
+            <div class="input-group"><label>身分</label>
+              <select class="input-box" id="dyAuthor"><option>Boni</option><option>儒銘</option><option>珀翊</option><option>庭葦</option><option>宜彥</option><option>俊安</option><option>郁馨</option></select>
+            </div>
+            <div class="input-group"><label>對應週次</label>
+              <select class="input-box" id="dyWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select>
+            </div>
+            <div class="input-group"><label>實習工作項目 ＆ 內容摘要（建議300字）</label>
+              <textarea class="input-box" id="dyText" rows="7" placeholder="本週完成事項、學習內容、遇到的問題與解決方式…"></textarea>
+            </div>
+            <div class="input-group"><label>雲端附件連結（GDrive / Notion）</label><input class="input-box" id="dyLink" placeholder="https://…"></div>
+            <button class="btn-primary" style="width:100%;" onclick="addDiary()">🔒 加密申報上傳</button>
+          </div>
+          <div class="panel-box">
+            <div class="tabs">
+              <button class="tab-btn active" onclick="switchDiaryTab('tab-stats',this)">📊 申報進度牆</button>
+              <button class="tab-btn" onclick="switchDiaryTab('tab-mylist',this)" id="tabMyList">我的週記</button>
+            </div>
+            <div id="tab-stats" class="tab-content active">
+              <div style="font-size:13px;color:var(--t2);margin-bottom:14px">全員目標：每人 9 篇</div>
+              <div class="dy-grid" id="dyGrid"></div>
+            </div>
+            <div id="tab-mylist" class="tab-content" style="max-height:58vh;overflow-y:auto;padding-right:6px">
+              <div id="myDiaryList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 決策密室（高管專屬） -->
+      <section id="sec-secret" class="section">
+        <div class="secret-wrap">
+          <div class="panel-box silver-decor" style="border-color:rgba(244,63,94,.25)">
+            <h4 style="color:var(--danger);margin-bottom:14px;font-size:15px">🔒 機密備忘錄</h4>
+            <textarea class="input-box" id="scMemoIn" rows="4" style="margin-bottom:12px" placeholder="老師批閱反饋、敏感財務查帳…"></textarea>
+            <button class="btn-primary" style="background:var(--danger);color:#fff;width:100%;margin-bottom:22px" onclick="addMemo()">封存備忘</button>
+            <div id="scMemoList" style="display:flex;flex-direction:column;gap:10px;max-height:38vh;overflow-y:auto;padding-right:6px"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="panel-box silver-decor" style="border-color:rgba(251,191,36,.25)">
+              <div class="tabs">
+                <button class="tab-btn active" onclick="switchSecretTab('tab-dy',this)">📂 週記內文審核與匯出</button>
+              </div>
+              <div id="tab-dy" class="tab-content active" style="max-height:50vh;overflow-y:auto;padding-right:6px"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  資料與常數
+// ══════════════════════════════════════════
+const SYS_KEY = 'INTERN_BASE_V30_STABLE_';
+const WEEKS = ['W1','W2','W3','W4','W5','W6','W7','W8','W9'];
+const WEEK_META = {
+  W1:{d:'07/02-07/03',t:'初期提案'},W2:{d:'07/06-07/10',t:'素材採集'},
+  W3:{d:'07/13-07/17',t:'7/17留守辦公'},W4:{d:'07/20-07/24',t:'核心初審'},
+  W5:{d:'07/27-07/31',t:'內容優化'},W6:{d:'08/03-08/07',t:'浴衣活動'},
+  W7:{d:'08/10-08/14',t:'成果整合'},W8:{d:'08/17-08/21',t:'模擬演練'},
+  W9:{d:'08/24-08/28',t:'榮譽表揚'}
+};
+const COL_DEF=[
+  {id:'todo',title:'未開始',color:'var(--t2)',bg:'transparent'},
+  {id:'progress',title:'進行中',color:'var(--blue)',bg:'rgba(14,165,233,0.05)'},
+  {id:'review',title:'老師覆核',color:'var(--accent)',bg:'rgba(251,191,36,0.05)'},
+  {id:'done',title:'已完成',color:'var(--green)',bg:'rgba(16,185,129,0.05)'},
+  {id:'stuck',title:'卡關中',color:'var(--danger)',bg:'rgba(244,63,94,0.05)'}
+];
+const GROUP_COLOR={qi:'var(--qi)',vi:'var(--vi)',cut:'var(--cut)',all:'var(--green)'};
+const GROUP_BG={qi:'var(--qi-bg)',vi:'var(--vi-bg)',cut:'var(--cut-bg)',all:'rgba(16,185,129,0.08)'};
+const GROUP_NAME={qi:'✍ 企劃',vi:'🎨 視覺',cut:'🎬 剪片',all:'全員'};
+const MEMBERS=['Boni','儒銘','珀翊','庭葦','宜彥','俊安','郁馨'];
+const DIARY_TARGET=9;
+
+function load(k,fb){
+  try{const d=localStorage.getItem(SYS_KEY+k);if(!d)return fb;const p=JSON.parse(d);if(Array.isArray(p)&&p.length===0&&Array.isArray(fb)&&fb.length>0)return fb;return p;}catch(e){return fb;}
+}
+
+let tasks=load('tasks',[
+  {id:'t1',title:'W1 企劃組：腦力激盪並收斂實習主題方向，提交初步企劃構想',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W1',status:'done'},
+  {id:'t2',title:'W1 視覺組：研究日本企業設計案例，參與企業和服日測拍記錄',group:'vi',owner:'宜彥',week:'W1',status:'done'},
+  {id:'t3',title:'W1 剪片組：盤點與整理現有舊影片素材，評估企劃主題之可行性',group:'cut',owner:'俊安、郁馨',week:'W1',status:'done'},
+  {id:'t4',title:'W2 企劃組：收集、分析日本廣告文化與日系特色文案',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W2',status:'progress'},
+  {id:'t5',title:'W2 視覺組：負責校園與環境大範圍照片拍攝與素材累積',group:'vi',owner:'宜彥',week:'W2',status:'progress'},
+  {id:'t6',title:'W2 剪片組：將現有新舊素材分類與標籤歸檔，進行分鏡與節奏發想',group:'cut',owner:'俊安、郁馨',week:'W2',status:'todo'},
+  {id:'t7',title:'W3 企劃組：完成短影音與文宣的完整拍攝腳本初稿，提交進度報告',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W3',status:'todo'},
+  {id:'t8',title:'W3 視覺組：產出招生DM/海報/封面概念初稿，發想化妝品商品DM',group:'vi',owner:'宜彥',week:'W3',status:'todo'},
+  {id:'t9',title:'W3 剪片組：整合7/7七夕活動素材，進行第一階段影片粗剪',group:'cut',owner:'俊安、郁馨',week:'W3',status:'todo'},
+  {id:'t10',title:'W4 企劃組：微調平面文案、校正影片字幕與旁白稿，追蹤兩組進度',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W4',status:'todo'},
+  {id:'t11',title:'W4 視覺組：將初稿實作產出初次成品，進行化妝品商品拍攝與DM設計',group:'vi',owner:'宜彥',week:'W4',status:'stuck'},
+  {id:'t12',title:'W4 剪片組：全面進入核心剪輯、後期音效與動畫編輯，產出粗剪版',group:'cut',owner:'俊安、郁馨',week:'W4',status:'todo'},
+  {id:'t13',title:'W5 企劃組：收集主管與老師意見，調整社群內容切入點',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W5',status:'todo'},
+  {id:'t14',title:'W5 視覺組：依據反饋意見全面優化前期平面設計，擴充宣傳素材庫',group:'vi',owner:'宜彥',week:'W5',status:'todo'},
+  {id:'t15',title:'W5 剪片組：依據審片意見修正影片節奏、調色、字幕與音效',group:'cut',owner:'俊安、郁馨',week:'W5',status:'todo'},
+  {id:'t16',title:'W6 企劃組：撰寫作品方向調整紀錄，規劃和服/浴衣體驗宣傳文案',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W6',status:'todo'},
+  {id:'t17',title:'W6 視覺組：針對平面視覺調性進行最終微調，製作社群廣告素材',group:'vi',owner:'宜彥',week:'W6',status:'todo'},
+  {id:'t18',title:'W6 剪片組：優化短影音細節，全員參與浴衣體驗捕捉精華畫面',group:'cut',owner:'俊安、郁馨',week:'W6',status:'todo'},
+  {id:'t19',title:'W7 企劃組：主導成果發表簡報架構與製作，收集作品建立最終資料夾',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W7',status:'todo'},
+  {id:'t20',title:'W7 視覺組：平面設計作品最終編修與定案，交付DM/海報及社群貼文',group:'vi',owner:'宜彥',week:'W7',status:'todo'},
+  {id:'t21',title:'W7 剪片組：影片最終調色與封裝輸出，交付核心影片1~3支',group:'cut',owner:'俊安、郁馨',week:'W7',status:'todo'},
+  {id:'t22',title:'W8 企劃組：納入祭典紀錄意義最終定案簡報，主導發表模擬練習',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W8',status:'todo'},
+  {id:'t23',title:'W8 視覺組：配合祭典修正平面圖表，參與發表練習準備設計理念講述',group:'vi',owner:'宜彥',week:'W8',status:'todo'},
+  {id:'t24',title:'W8 剪片組：將祭典精華快速補剪入最終影片，參與發表練習',group:'cut',owner:'俊安、郁馨',week:'W8',status:'todo'},
+  {id:'t25',title:'W9 結業週：8/27 最終成果發表會 (30分鐘展示與講評) & 8/28 結業心得',group:'all',owner:'全員',week:'W9',status:'todo'}
+]);
+let meetings=load('meets',[{id:'m1',title:'W1 環境對齊覆盤會',date:'2026-07-03',text:'決議收斂實習主題。公費預繳 ¥5,000 完畢。'}]);
+let diaries=load('diaries',[{id:'d1',author:'系統',week:'W1',date:'2026-07-01',text:'控制基地建立完畢。手札週記系統啟動，可直接匯出崑山大學週報格式。',link:''}]);
+let memos=load('memos',[{id:'sm1',text:'決策密室啟用成功。'}]);
+
+function saveAll(){
+  localStorage.setItem(SYS_KEY+'tasks',JSON.stringify(tasks));
+  localStorage.setItem(SYS_KEY+'meets',JSON.stringify(meetings));
+  localStorage.setItem(SYS_KEY+'diaries',JSON.stringify(diaries));
+  localStorage.setItem(SYS_KEY+'memos',JSON.stringify(memos));
+}
+
+// ══════════════════════════════════════════
+//  狀態與登入
+// ══════════════════════════════════════════
+let currentUser='',isGuest=false,isAdmin=false,currentFilter='all',currentView='board';
+let dragId=null,pendingDel=null,delTimer=null;
+
+function getMyGroup(){
+  if(['儒銘','珀翊','庭葦'].includes(currentUser))return'qi';
+  if(currentUser==='宜彥')return'vi';
+  if(['俊安','郁馨'].includes(currentUser))return'cut';
+  return'all';
+}
+
+let tempSelected='';
+function selectChar(name,el){
+  tempSelected=name;
+  document.querySelectorAll('.char-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function enterSystem(){
+  if(!tempSelected){showToast('請先選擇身分','err');return;}
+  if(tempSelected==='Boni'){document.getElementById('pwMask').classList.add('active');document.getElementById('pwInput').focus();}
+  else completeLogin(tempSelected,false);
+}
+function closePwMask(){document.getElementById('pwMask').classList.remove('active');}
+function verifyPw(){
+  if(document.getElementById('pwInput').value==='1128'){closePwMask();completeLogin('Boni',false);}
+  else{showToast('驗證碼錯誤','err');document.getElementById('pwInput').value='';}
+}
+function enterGuestMode(){completeLogin('訪客',true);}
+
+function completeLogin(name,guestFlag){
+  currentUser=name;isGuest=guestFlag;
+  isAdmin=['Boni','指導老師'].includes(currentUser);
+  
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('currentUserDisplay').textContent=isGuest?'👁 訪客預覽':'👤 '+currentUser;
+  
+  document.querySelectorAll('.guest-hide').forEach(el=>el.style.display=isGuest?'none':'');
+  document.querySelectorAll('.admin-hide').forEach(el=>el.style.display=isAdmin&&!isGuest?'block':'none');
+  
+  document.getElementById('mtgDate').valueAsDate=new Date();
+  if(!isGuest&&MEMBERS.includes(currentUser)){
+    document.getElementById('dyAuthor').value=currentUser;
+    if(!isAdmin) document.getElementById('dyAuthor').disabled=true;
+  }
+
+  buildNav(); buildScopeBadge(); renderAlertBar();
+  
+  if(!isGuest&&!isAdmin){
+    const myworkBtn=Array.from(document.querySelectorAll('.nav-item')).find(b=>b.textContent.includes('我的工作區'));
+    if(myworkBtn){navTo('sec-mywork',myworkBtn);renderMyWork();}
+  } else {
+    renderViews();
+  }
+  
+  renderMeetings(); renderDiaries(); 
+  if(isAdmin) renderSecret();
+}
+
+function buildNav(){
+  const nav=document.getElementById('navMenu'); nav.innerHTML='';
+  const topbar=document.getElementById('topbarR'); topbar.innerHTML='';
+  const common=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'},{id:'sec-diaries',icon:'📓',label:'手札週記申報'}];
+  
+  const myGroup=getMyGroup();
+  if(!isGuest&&!isAdmin&&myGroup!=='all') common.splice(1,0,{id:'sec-mywork',icon:'🗂',label:'我的工作區'});
+  
+  let sections=[...common];
+  if(isGuest){ sections=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'}]; } 
+  else if(isAdmin){ sections=[...common,{id:'sec-meetings',icon:'🗓',label:'會議與對帳'},{id:'sec-secret',icon:'🔒',label:'決策密室'}]; } 
+  else { sections=[...common,{id:'sec-meetings',icon:'🗓',label:'會議紀錄'}]; }
+
+  let first=true;
+  sections.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.className='nav-item'+(first?' active':'');
+    btn.innerHTML=`<span class="nav-icon">${s.icon}</span>${s.label}`;
+    btn.onclick=()=>{
+      navTo(s.id,btn);
+      if(s.id==='sec-mywork')renderMyWork();
+      if(s.id==='sec-kanban')renderViews();
+      if(s.id==='sec-meetings')renderMeetings();
+      if(s.id==='sec-secret')renderSecret();
+    };
+    nav.appendChild(btn); first=false;
+  });
+
+  if(!isGuest){
+    topbar.innerHTML=`<button class="btn-ghost" style="font-size:13px" onclick="copyStatus()">📢 複製進度播報</button>`;
+    if(isAdmin) topbar.innerHTML+=`<button class="btn-primary" onclick="openTaskModal()">＋ 部署新任務</button>`;
+  }
+
+  const gf=document.getElementById('groupFilters');
+  if(gf){
+    if(isAdmin||isGuest) gf.innerHTML=`<button class="chip active" onclick="setFilter('all',this)">全部</button><button class="chip qi-chip" onclick="setFilter('qi',this)">✍ 企劃</button><button class="chip vi-chip" onclick="setFilter('vi',this)">🎨 視覺</button><button class="chip cut-chip" onclick="setFilter('cut',this)">🎬 剪片</button>`;
+    else gf.innerHTML='';
+  }
+}
+
+function buildScopeBadge(){
+  const el=document.getElementById('scopeBadge');
+  if(isGuest){el.innerHTML=`<div class="sb-scope-badge scope-guest">👁 訪客預覽模式</div>`;return;}
+  if(isAdmin){el.innerHTML=`<div class="sb-scope-badge scope-admin">🔑 高管 · 完整存取</div>`;return;}
+  const map={qi:`<div class="sb-scope-badge scope-qi">✍ 企劃組</div>`,vi:`<div class="sb-scope-badge scope-vi">🎨 視覺組</div>`,cut:`<div class="sb-scope-badge scope-cut">🎬 剪片組</div>`};
+  el.innerHTML=map[getMyGroup()]||'';
+}
+
+function renderAlertBar(){
+  if(isGuest){return;}
+}
+
+function navTo(secId,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(secId)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pageTitle').textContent=btn.textContent.replace(/[^\u4e00-\u9fa5\w\s（）·！]/g,'').trim();
+}
+
+// ══════════════════════════════════════════
+//  全景看板
+// ══════════════════════════════════════════
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('#groupFilters .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderViews();
+}
+function setView(v,btn){
+  currentView=v;
+  document.querySelectorAll('#sec-kanban .v-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('viewBoard').style.display=v==='board'?'flex':'none';
+  document.getElementById('viewList').style.display=v==='list'?'block':'none';
+  renderViews();
+}
+
+function renderViews(){
+  const q=document.getElementById('kbSearch')?.value.toLowerCase()||'';
+  const ft=tasks.filter(t=>{
+    const gm=currentFilter==='all'||t.group===currentFilter;
+    const qm=!q||t.title.toLowerCase().includes(q)||t.owner.toLowerCase().includes(q);
+    return gm&&qm;
+  });
+  const s={todo:0,progress:0,review:0,done:0,stuck:0};
+  tasks.forEach(t=>{if(s[t.status]!==undefined)s[t.status]++;});
+  const tot=tasks.length;
+  const pct=tot?Math.round(s.done/tot*100):0;
+  
+  const dpPct = document.getElementById('dashPct');
+  if(dpPct){
+    dpPct.textContent=pct+'%';
+    document.getElementById('fill-done').style.width=(tot?Math.round(s.done/tot*100):0)+'%';
+    document.getElementById('fill-prog').style.width=(tot?Math.round((s.progress+s.review)/tot*100):0)+'%';
+    document.getElementById('fill-stuck').style.width=(tot?Math.round(s.stuck/tot*100):0)+'%';
+  }
+  
+  if(currentView==='board') renderBoard(ft); else renderList(ft);
+  updateMilestones();
+}
+
+function canEdit(){return !isGuest && isAdmin;}
+
+function updateMilestones() {
+  const checkCh = (taskIds) => tasks.filter(t => taskIds.includes(t.id)).every(t => t.status === 'done');
+  
+  const ch1 = checkCh(['t1', 't4']);
+  document.getElementById('ms-ch1').className = 'ms-item ' + (ch1?'done':'');
+  document.getElementById('ms-st-1').textContent = ch1 ? '✓ 已達標' : '追蹤 W1/W2 進度...';
+
+  const ch2 = checkCh(['t8','t11','t20']);
+  document.getElementById('ms-ch2').className = 'ms-item ' + (ch2?'done':'');
+  document.getElementById('ms-st-2').textContent = ch2 ? '✓ 已達標' : '追蹤 W3/W4 進度...';
+
+  const ch3 = checkCh(['t9','t12','t21']);
+  document.getElementById('ms-ch3').className = 'ms-item ' + (ch3?'done':'');
+  document.getElementById('ms-st-3').textContent = ch3 ? '✓ 已達標' : '追蹤 W3/W4 進度...';
+
+  const ch4 = checkCh(['t19','t22','t25']);
+  document.getElementById('ms-ch4').className = 'ms-item ' + (ch4?'done':'');
+  document.getElementById('ms-st-4').textContent = ch4 ? '✓ 報告可產出' : '追蹤 W7/W8 進度...';
+}
+
+function renderBoard(ft){
+  COL_DEF.forEach(col=>{
+    const ct=ft.filter(t=>t.status===col.id);
+    const pct=ft.length?Math.round(ct.length/ft.length*100):0;
+    const el=document.getElementById('col-'+col.id);if(!el)return;
+    let h=`<div class="col-header" style="background:${col.bg}">
+      <div class="col-title"><span style="color:${col.color}">${col.title}</span><span class="col-count">${ct.length}</span></div>
+      <div class="track-sm"><div class="fill-sm" style="width:${pct}%;background:${col.color}"></div></div>
+    </div><div class="col-cards">`;
+    ct.forEach(t=>{
+      const gc=GROUP_COLOR[t.group]||'var(--all)';
+      const gb=GROUP_BG[t.group]||'var(--all-bg)';
+      const gn=GROUP_NAME[t.group]||'全員';
+      const done=t.status==='done';
+      const canDrag=canEdit();
+      const canClick=!isGuest;
+      h+=`<div class="card" draggable="${canDrag}"
+        ${canDrag?`ondragstart="dragId='${t.id}';this.classList.add('dragging')" ondragend="this.classList.remove('dragging')"` :''}
+        ${canClick?`onclick="openTaskModal('${t.id}')" style="cursor:pointer"`:''}>
+        <div class="card-indicator" style="background:${col.color}"></div>
+        <div class="card-header">
+          <span class="c-tag" style="color:${gc};border-color:${gc};background:${gb}">${gn}</span>
+          ${canDrag?`<button class="btn-icon" onclick="event.stopPropagation();triggerDelete('${t.id}','${t.title.substring(0,8).replace(/'/g,'')}')">🗑</button>`:''}
+        </div>
+        <div class="c-title" style="${done?'text-decoration:line-through;color:var(--t2)':''}">${t.title}</div>
+        <div class="c-footer"><span>👤 ${t.owner}</span><span style="background:var(--bg-hover);padding:2px 7px;border-radius:4px;font-size:11px">${t.week}</span></div>
+      </div>`;
+    });
+    h+=`</div>`;
+    el.innerHTML=h;
+  });
+}
+
+function renderList(ft){
+  const lv=document.getElementById('viewList');if(!lv)return;lv.innerHTML='';
+  WEEKS.forEach(w=>{
+    const wt=ft.filter(t=>t.week===w);if(!wt.length)return;
+    const m=WEEK_META[w];
+    lv.innerHTML+=`<div class="list-week-label">${w} · ${m.d} <span style="opacity:.5;font-weight:400;margin-left:6px">${m.t}</span></div>`;
+    wt.forEach(t=>{
+      const gc=GROUP_COLOR[t.group]||'var(--all)';
+      const gb=GROUP_BG[t.group]||'var(--all-bg)';
+      const gn=GROUP_NAME[t.group]||'全員';
+      const st=COL_DEF.find(c=>c.id===t.status)||COL_DEF[0];
+      lv.innerHTML+=`<div class="list-row" ${canEdit()?`style="cursor:pointer" onclick="openTaskModal('${t.id}')"`:''}>
+        <span class="c-tag" style="color:${gc};border-color:${gc};background:${gb};font-size:11px;padding:3px 9px;border-radius:4px">${gn}</span>
+        <div><div style="font-size:13px;font-weight:700;color:${t.status==='done'?'var(--t2)':'var(--t0)'};${t.status==='done'?'text-decoration:line-through':''};">${t.title}</div><div style="font-size:12px;color:var(--t2)">👤 ${t.owner}</div></div>
+        <span style="font-size:12px;font-weight:700;color:${st.color};background:${st.bg};padding:4px 11px;border-radius:99px">${st.title}</span>
+        ${canEdit()?`<button class="btn-icon" onclick="event.stopPropagation();triggerDelete('${t.id}','${t.title.substring(0,8).replace(/'/g,'')}')">🗑</button>`:'<span></span>'}
+      </div>`;
+    });
+  });
+}
+
+function allowDrop(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+document.addEventListener('dragleave',e=>{if(e.target.classList?.contains('col'))e.target.classList.remove('drag-over');});
+function handleDrop(e,st){
+  e.preventDefault(); document.querySelectorAll('.col').forEach(c=>c.classList.remove('drag-over'));
+  if(!canEdit() && isAdmin)return;
+  const t=tasks.find(x=>x.id===dragId);
+  if(t){
+    // 如果是組員在自己的看板拖曳
+    if(!isAdmin && t.group !== getMyGroup() && t.group !== 'all') {
+      showToast('只能移動自己組的任務', 'err'); dragId=null; return;
+    }
+    t.status=st;saveAll();
+    renderViews();
+    if(document.getElementById('sec-mywork').classList.contains('active')) renderMyWork();
+    showToast('✅ 已移至 '+COL_DEF.find(c=>c.id===st)?.title, 'ok');
+  }
+  dragId=null;
+}
+
+// ══════════════════════════════════════════
+//  我的工作區（組員專屬看板/清單）
+// ══════════════════════════════════════════
+function setMyView(v,btn){
+  myViewMode=v;
+  document.querySelectorAll('#sec-mywork .v-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('mywork-board').style.display=v==='board'?'flex':'none';
+  document.getElementById('mywork-list').style.display=v==='list'?'block':'none';
+  renderMyWork();
+}
+
+function renderMyWork(){
+  if(isAdmin || isGuest) return;
+  const myGroup=getMyGroup();
+  const q=document.getElementById('mySearch')?.value.toLowerCase()||'';
+  const ft=tasks.filter(t=>(t.group===myGroup||t.group==='all')&&(!q||t.title.toLowerCase().includes(q)));
+  const done=ft.filter(t=>t.status==='done').length;
+  const pct=ft.length?Math.round(done/ft.length*100):0;
+  
+  document.getElementById('mywork-pct').textContent=pct+'%';
+  document.getElementById('mywork-fill').style.width=pct+'%';
+  document.getElementById('mywork-prog-label').textContent=`我的任務進度（${done}/${ft.length} 項完成）`;
+  const gLabels={qi:'企劃組',vi:'視覺組',cut:'剪片組'};
+  document.getElementById('mywork-header').textContent=`${currentUser} · ${gLabels[myGroup]||''} 工作區`;
+
+  if(myViewMode==='board'){
+    const bd=document.getElementById('mywork-board');bd.innerHTML='';
+    COL_DEF.forEach(col=>{
+      const ct=ft.filter(t=>t.status===col.id);
+      const div=document.createElement('div');
+      div.className='col';div.style.minWidth='240px';
+      div.ondragover = e => allowDrop(e);
+      div.ondrop = e => handleDrop(e, col.id);
+      div.innerHTML=`<div class="col-header" style="background:${col.bg}">
+        <div class="col-title"><span style="color:${col.color}">${col.title}</span><span class="col-count">${ct.length}</span></div>
+      </div><div class="col-cards">${ct.map(t=>{
+        const done=t.status==='done';
+        const canDrag = t.group===myGroup || t.group==='all';
+        return `<div class="card" draggable="${canDrag}"
+          ${canDrag?`ondragstart="dragId='${t.id}';this.classList.add('dragging')" ondragend="this.classList.remove('dragging')"` :''}
+          onclick="openTaskModal('${t.id}')" style="cursor:${canDrag?'grab':'pointer'}">
+          <div class="card-indicator" style="background:${col.color}"></div>
+          <div class="c-title" style="${done?'text-decoration:line-through;color:var(--t2)':''}">${t.title}</div>
+          <div class="c-footer"><span>${t.week}</span><span style="font-size:11px;color:${col.color}">${col.title}</span></div>
+        </div>`;
+      }).join('')}</div>`;
+      bd.appendChild(div);
+    });
+  } else {
+    const lv=document.getElementById('mywork-list');lv.innerHTML='';
+    WEEKS.forEach(w=>{
+      const wt=ft.filter(t=>t.week===w);if(!wt.length)return;
+      const m=WEEK_META[w];
+      lv.innerHTML+=`<div class="list-week-label">${w} · ${m.d} <span style="opacity:.5;font-weight:400;margin-left:6px">${m.t}</span></div>`;
+      wt.forEach(t=>{
+        const st=COL_DEF.find(c=>c.id===t.status)||COL_DEF[0];
+        lv.innerHTML+=`<div class="list-row" style="cursor:pointer" onclick="openTaskModal('${t.id}')">
+          <span style="width:10px;height:10px;border-radius:50%;background:${st.color};display:inline-block;flex-shrink:0"></span>
+          <div><div style="font-size:13px;font-weight:700;color:${t.status==='done'?'var(--t2)':'var(--t0)'};${t.status==='done'?'text-decoration:line-through':''}">${t.title}</div></div>
+          <span style="font-size:12px;font-weight:700;color:${st.color};background:${st.bg};padding:4px 11px;border-radius:99px">${st.title}</span>
+          <span></span>
+        </div>`;
+      });
+    });
+  }
+}
+
+// ══════════════════════════════════════════
+//  任務 CRUD (Modal)
+// ══════════════════════════════════════════
+function openTaskModal(id=null){
+  if(isGuest)return;
+  const modal=document.getElementById('taskModal');
+  if(id){
+    const t=tasks.find(x=>x.id===id);if(!t)return;
+    document.getElementById('tkId').value=t.id;
+    document.getElementById('tkTitle').value=t.title;
+    document.getElementById('tkGroup').value=t.group;
+    document.getElementById('tkWeek').value=t.week;
+    document.getElementById('tkOwner').value=t.owner;
+    document.getElementById('tkStatus').value=t.status;
+    ['tkTitle','tkGroup','tkWeek','tkOwner'].forEach(f=>{ document.getElementById(f).disabled=!isAdmin; });
+  } else {
+    if(!isAdmin){showToast('組員無法新增任務，請聯繫 Boni 或指導老師','err');return;}
+    document.getElementById('tkId').value='';
+    ['tkTitle','tkGroup','tkWeek','tkOwner','tkStatus'].forEach(f=>document.getElementById(f).disabled=false);
+    document.getElementById('tkTitle').value='';document.getElementById('tkOwner').value='';
+    document.getElementById('tkStatus').value='todo';
+  }
+  modal.classList.add('show');document.getElementById('tkTitle').focus();
+}
+function closeTaskModal(){document.getElementById('taskModal').classList.remove('show');}
+function saveTask(){
+  const title=document.getElementById('tkTitle').value.trim();
+  if(!title){showToast('任務名稱必填','err');return;}
+  const id=document.getElementById('tkId').value;
+  const nd={title,group:document.getElementById('tkGroup').value,week:document.getElementById('tkWeek').value,owner:document.getElementById('tkOwner').value||'未指定',status:document.getElementById('tkStatus').value};
+  if(id){const i=tasks.findIndex(x=>x.id===id);if(i>-1)tasks[i]={...tasks[i],...nd};}
+  else tasks.push({id:'t_'+Date.now(),...nd});
+  saveAll();renderViews();if(!isAdmin)renderMyWork();closeTaskModal();showToast('✅ 任務已儲存', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  會議
+// ══════════════════════════════════════════
+let mtgTimer = null;
+function debounceSearchMtg() { clearTimeout(mtgTimer); mtgTimer = setTimeout(renderMeetings, 300); }
+function renderMeetings() {
+  const q = document.getElementById('mtgSearch')?.value.toLowerCase() || '';
+  const list = document.getElementById('mtgList'); if(!list) return; list.innerHTML = '';
+  const ft = meetings.filter(m => !q || m.title.toLowerCase().includes(q) || m.text.toLowerCase().includes(q));
+  
+  if(!ft.length) { list.innerHTML = '<div style="color:var(--t2); text-align:center; padding:20px;">無符合紀錄</div>'; return; }
+  const hl = s => q ? s.replace(new RegExp(q,'gi'), m => `<mark style="background:var(--accent-l);color:var(--accent);padding:0 2px;border-radius:2px;">${m}</mark>`) : s;
+  
+  ft.forEach(m => {
+    list.innerHTML += `
+      <div style="background:var(--bg); border:1px solid var(--line); border-radius:var(--r); padding:18px; border-left:4px solid var(--blue);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:11px;">
+          <strong style="color:var(--t0); font-size:15px;">${hl(m.title)}</strong>
+          <span style="font-size:12px; color:var(--t2);">${m.date}</span>
+        </div>
+        <div style="white-space:pre-wrap; color:var(--t1); font-size:13px; line-height:1.6;">${hl(m.text)}</div>
+        ${isAdmin ? `<div style="text-align:right; margin-top:11px;"><button class="btn-danger" onclick="triggerDelete('${m.id}','${m.title.substring(0,8).replace(/'/g,'')}')">刪除</button></div>` : ''}
+      </div>
+    `;
+  });
+}
+function addMeeting() {
+  const title = document.getElementById('mtgTitle').value.trim();
+  const text = document.getElementById('mtgText').value.trim();
+  if(!title || !text) { showToast('標題與內容必填', 'err'); return; }
+  meetings.unshift({id:'m_'+Date.now(), title, date:document.getElementById('mtgDate').value, text});
+  document.getElementById('mtgTitle').value = ''; document.getElementById('mtgText').value = '';
+  saveAll(); renderMeetings(); showToast('✅ 紀錄已儲存', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  手札週記
+// ══════════════════════════════════════════
+function switchDiaryTab(id,btn){
+  document.querySelectorAll('#sec-diaries .tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('#sec-diaries .tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='tab-mylist')renderMyDiaries();
+}
+function renderDiaries(){
+  const grid=document.getElementById('dyGrid');if(!grid)return;
+  const map={};diaries.forEach(d=>map[d.author]=(map[d.author]||0)+1);
+  grid.innerHTML='';
+  MEMBERS.forEach(name=>{
+    const c=map[name]||0;const pct=Math.round(c/DIARY_TARGET*100);
+    grid.innerHTML+=`<div class="dy-card">
+      <div class="dy-name">${name}</div>
+      <div class="dy-num${c>0?' y':''}" style="color:${c>=DIARY_TARGET?'var(--green)':c>0?'var(--accent)':'var(--t2)'}">${c}</div>
+      <div style="font-size:11px;color:var(--t2)">/ ${DIARY_TARGET} 篇</div>
+      <div class="dy-track"><div class="dy-fill" style="width:${Math.min(pct,100)}%"></div></div>
+      <div style="font-size:11px;color:var(--t2);margin-top:5px">${pct}%</div>
+    </div>`;
+  });
+}
+function renderMyDiaries(){
+  const wall=document.getElementById('myDiaryList');if(!wall)return;wall.innerHTML='';
+  const mine=diaries.filter(d=>d.author===currentUser||isAdmin);
+  if(!mine.length){wall.innerHTML=`<div style="color:var(--t2);text-align:center;padding:20px">尚無申報紀錄</div>`;return;}
+  mine.forEach(d=>{
+    const isMe=d.author===currentUser;
+    wall.innerHTML+=`<div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:9px;border-bottom:1px dashed var(--line);padding-bottom:9px">
+        <strong style="color:var(--accent)">${d.author} · ${d.week}</strong>
+        <span style="font-size:12px;color:var(--t2)">${d.date}</span>
+      </div>
+      ${isAdmin?`<div style="font-size:13px;color:var(--t1);white-space:pre-wrap;margin-bottom:12px;background:rgba(0,0,0,.2);padding:11px;border-radius:var(--r)">${d.text}</div>`:'<div style="font-size:12px;color:var(--t2);margin-bottom:9px">🔒 內文隱私保護</div>'}
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        ${d.link?`<a href="${d.link}" target="_blank" style="font-size:13px;font-weight:600;text-decoration:underline">🔗 開啟附件</a>`:'<span style="font-size:12px;color:var(--t2)">無附件</span>'}
+        ${isMe?`<div style="display:flex;gap:8px"><button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="openExportSingle('${d.id}')">📄 匯出週報</button><button class="btn-danger" onclick="triggerDelete('${d.id}','${d.author}的週記')">刪除</button></div>`:'<span style="font-size:11px;color:var(--t2)">唯讀</span>'}
+      </div>
+    </div>`;
+  });
+}
+function addDiary(){
+  const text=document.getElementById('dyText').value.trim();
+  if(!text){showToast('內文不能為空','err');return;}
+  diaries.unshift({id:'d_'+Date.now(),author:document.getElementById('dyAuthor').value,week:document.getElementById('dyWeek').value,date:new Date().toISOString().split('T')[0],text,link:document.getElementById('dyLink').value});
+  document.getElementById('dyText').value='';document.getElementById('dyLink').value='';
+  saveAll();renderDiaries();renderMyDiaries();renderSecret();showToast('🔒 手札申報成功', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  週報匯出 (HTML-to-DOC 原生技術, 不依賴 docx 套件)
+// ══════════════════════════════════════════
+const WEEK_DATES={
+  W1:'7月2日～7月3日',W2:'7月6日～7月10日',W3:'7月13日～7月17日',
+  W4:'7月20日～7月24日',W5:'7月27日～7月31日',W6:'8月3日～8月7日',
+  W7:'8月10日～8月14日',W8:'8月17日～8月21日',W9:'8月24日～8月28日'
+};
+
+function getExportData(){
+  const author=document.getElementById('expAuthor').value;
+  const week=document.getElementById('expWeek').value;
+  const d=diaries.find(x=>x.author===author&&x.week===week);
+  
+  // 智慧撈取當週該組員且 status 為 done 的任務
+  const userTasks = tasks.filter(t => t.owner.includes(author) && t.week === week && t.status === 'done');
+  const taskStr = userTasks.length > 0 ? userTasks.map(t => '・' + t.title).join('\n') : '・（本週尚未完成看板任務或無紀錄）';
+  
+  const fillDate=d?d.date:new Date().toISOString().split('T')[0];
+  const text=d?d.text:'（本週尚未申報手札，請先至「手札週記申報」填寫內容後再匯出）';
+  const link=d&&d.link?d.link:'無';
+  const weekNum=week.replace('W','第')+'週';
+  const dateRange=WEEK_DATES[week]||'';
+  
+  return {author,week,weekNum,dateRange,text,fillDate,taskStr,link};
+}
+
+function previewExport(){
+  const {author,weekNum,dateRange,text,fillDate,taskStr,link}=getExportData();
+  const el=document.getElementById('exportPreview');
+  el.style.display='block';
+  el.style.position = 'relative';
+  
+  el.innerHTML=`
+  <div style="position:absolute; top:45%; left:50%; transform:translate(-50%, -50%) rotate(-30deg); font-size:45px; color:rgba(180,180,180,0.15); white-space:nowrap; pointer-events:none; font-weight:900; z-index:0;">公共關係暨廣告系</div>
+  <div style="font-family:'Noto Sans TC',serif;line-height:2; position:relative; z-index:1;">
+    <div style="text-align:center;font-weight:700;font-size:15px;margin-bottom:4px">崑山科技大學 創意媒體學院 公共關係暨廣告系</div>
+    <div style="text-align:center;font-weight:700;font-size:18px;border-bottom:2px solid #555;padding-bottom:8px;margin-bottom:12px">實習工作週報表</div>
+    
+    <div style="font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;">
+      <span>學生姓名、學號：<strong>${author}</strong></span>
+      <span>填表日期：${fillDate}</span>
+    </div>
+    
+    <div style="border:1px solid #555;padding:16px;min-height:100px;font-size:13px;margin-bottom:12px;">
+      <div style="font-weight:900;font-size:14px;margin-bottom:8px">${weekNum}（${dateRange}）</div>
+      <div style="font-size:11px;color:#666;margin-bottom:12px;">每週填報一頁，請條列式敘述本週實習工作項目及內容摘要，字數300字以上。</div>
+      
+      <div style="font-weight:700;margin-bottom:4px;color:var(--accent);">【本週實習工作項目及進度摘要】：</div>
+      <div style="white-space:pre-wrap;margin-bottom:16px;">${taskStr}</div>
+      
+      <div style="font-weight:700;margin-bottom:4px;color:var(--accent);">【實習心得與反思】：</div>
+      <div style="white-space:pre-wrap;margin-bottom:16px;">${text}</div>
+      
+      <div style="font-weight:700;margin-bottom:4px;color:var(--accent);">【雲端成果附件】：</div>
+      <div style="white-space:pre-wrap;word-break:break-all;">${link}</div>
+    </div>
+    
+    <div style="border:1px solid #555;padding:12px;min-height:80px;font-size:12px;margin-bottom:12px;">
+      <div style="color:#666;">照片（可附上實習現場或作品截圖）</div>
+    </div>
+    
+    <div style="font-size:11px;color:#555;margin-bottom:16px;">註：本表應於每週最後一個工作日結束前完成，請單位主管簽核，並交由實習學生存查，謝謝！</div>
+    
+    <div style="font-size:13px;color:#333;display:flex;flex-direction:column;gap:12px;">
+      <div>實習學生簽名或蓋章：________________</div>
+      <div>實習主管簽名或蓋章：________________</div>
+      <div>導師簽名或蓋章：____________________</div>
+    </div>
+    
+    <div style="font-size:10px;color:#888;text-align:right;margin-top:16px;">Kun Shan University · www.ksu.edu.tw</div>
+  </div>`;
+}
+
+function openExportModal(presetAuthor=null,presetWeek=null){
+  const sel=document.getElementById('expAuthor');sel.innerHTML='';
+  (isAdmin?MEMBERS:[currentUser]).forEach(n=>{sel.innerHTML+=`<option>${n}</option>`;});
+  if(presetAuthor)sel.value=presetAuthor;
+  if(presetWeek)document.getElementById('expWeek').value=presetWeek;
+  document.getElementById('exportPreview').style.display='none';
+  document.getElementById('exportModal').classList.add('show');
+}
+function openExportSingle(id){
+  const d=diaries.find(x=>x.id===id);if(!d)return;
+  openExportModal(d.author,d.week);
+  setTimeout(previewExport,120);
+}
+
+// 核心 HTML-to-DOC 匯出技術
+function exportWord() {
+  const {author,weekNum,dateRange,text,fillDate,taskStr,link} = getExportData();
+  
+  const docHTML = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head>
+      <meta charset='utf-8'>
+      <title>實習週報_${author}_${weekNum}</title>
+      <style>
+        @page { size: 21cm 29.7cm; margin: 2.5cm 2.5cm; mso-header-margin:1.5cm; mso-footer-margin:1.5cm; }
+        body { font-family: '標楷體', '新細明體', serif; line-height: 1.5; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        td { border: 1px solid #000; padding: 15px; vertical-align: top; }
+        /* Word 支援的 VML 背景浮水印 */
+        .watermark { position: absolute; z-index: -1000; top: 400px; left: 0; width: 100%; text-align: center; font-size: 80pt; color: #f2f2f2; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="watermark">公共關係暨廣告系</div>
+      
+      <div style="text-align: center; font-size: 16pt; font-weight: bold; font-family: '標楷體'; margin-bottom: 5px;">崑山科技大學 創意媒體學院 公共關係暨廣告系</div>
+      <div style="text-align: center; font-size: 20pt; font-weight: bold; font-family: '標楷體'; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 5px;">實習工作週報表</div>
+      
+      <div style="margin-bottom: 15px; font-size: 12pt; display: flex; justify-content: space-between;">
+        <span>學生姓名、學號：<b>${author}</b></span>
+        <span style="float: right;">填表日期：${fillDate}</span>
+      </div>
+      
+      <table>
+        <tr>
+          <td style="height: 450px;">
+            <div style="font-weight: bold; font-size: 14pt; margin-bottom: 15px; font-family: '標楷體';">${weekNum}（${dateRange}）</div>
+            <div style="font-size: 11pt; color: #555; margin-bottom: 20px;">每週填報一頁，請條列式敘述本週實習工作項目及內容摘要，字數300字以上。</div>
+            
+            <div style="font-weight: bold; margin-bottom: 5px;">【本週實習工作項目及進度摘要】：</div>
+            <div style="white-space: pre-wrap; margin-bottom: 20px;">${taskStr}</div>
+            
+            <div style="font-weight: bold; margin-bottom: 5px;">【實習心得與反思】：</div>
+            <div style="white-space: pre-wrap; margin-bottom: 20px;">${text}</div>
+            
+            <div style="font-weight: bold; margin-bottom: 5px;">【雲端成果附件】：</div>
+            <div>${link}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="height: 180px;">
+            <div style="font-size: 11pt; color: #555;">照片（可附上實習現場或作品截圖）</div>
+          </td>
+        </tr>
+      </table>
+      
+      <div style="font-size: 11pt; color: #333; margin-bottom: 20px;">註：本表應於每週最後一個工作日結束前完成，請單位主管簽核，並交由實習學生存查，謝謝！</div>
+      
+      <div style="font-size: 12pt; margin-bottom: 20px;">實習學生簽名或蓋章：________________</div>
+      <div style="font-size: 12pt; margin-bottom: 20px;">實習主管簽名或蓋章：________________</div>
+      <div style="font-size: 12pt; margin-bottom: 20px;">導師簽名或蓋章：____________________</div>
+      
+      <div style="text-align: right; font-size: 10pt; color: #777; margin-top: 40px; font-family: 'Arial';">Kun Shan University · www.ksu.edu.tw</div>
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob(['\ufeff', docHTML], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `實習週報_${author}_${weekNum}.doc`;
+  document.body.appendChild(a); 
+  a.click(); 
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`✅ ${author} ${weekNum} 週報 DOC 檔已下載！`, 'ok');
+}
+
+function exportPdf(){
+  const {author,weekNum,dateRange,text,fillDate,taskStr,link}=getExportData();
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>實習週報_${author}_${weekNum}</title>
+  <style>
+    @page{size:A4;margin:2.5cm 2.5cm}
+    body{font-family:"標楷體","新細明體",serif;font-size:12pt;line-height:1.6;color:#000; position:relative; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
+    .watermark{position:fixed; top:45%; left:50%; transform:translate(-50%, -50%) rotate(-35deg); font-size:75px; color:rgba(200,200,200,0.3); font-weight:900; z-index:-1; pointer-events:none; white-space:nowrap;}
+    .center{text-align:center} .bold{font-weight:bold}
+    table{width:100%;border-collapse:collapse;margin:15px 0}
+    td{border:1px solid #444;padding:15px;vertical-align:top}
+    .info{font-size:12pt;margin:10px 0; display:flex; justify-content:space-between;}
+    .sign{margin-top:15px;font-size:12pt}
+    .footer{text-align:right;font-size:10pt;color:#777;margin-top:20px;font-family:Arial,sans-serif;}
+    .section-title {font-weight:bold; margin-top:15px; margin-bottom:5px;}
+  </style></head><body>
+  <div class="watermark">公共關係暨廣告系</div>
+  <div class="center bold" style="font-size:15pt">崑山科技大學 創意媒體學院 公共關係暨廣告系</div>
+  <div class="center bold" style="font-size:18pt;border-bottom:2px solid #444;padding-bottom:8px;margin-bottom:15px">實習工作週報表</div>
+  <div class="info"><span>學生姓名、學號：<span class="bold">${author}</span></span><span>填表日期：${fillDate}</span></div>
+  <table><tr><td style="min-height:400px">
+    <div class="bold" style="font-size:14pt">${weekNum}（${dateRange}）</div>
+    <div style="font-size:10pt;color:#666;margin-bottom:15px">每週填報一頁，請條列式敘述本週實習工作項目及內容摘要，字數300字以上。</div>
+    <div class="section-title">【本週實習工作項目及進度摘要】：</div>
+    <div style="white-space:pre-wrap; margin-bottom:15px;">${taskStr}</div>
+    <div class="section-title">【實習心得與反思】：</div>
+    <div style="white-space:pre-wrap; margin-bottom:15px;">${text}</div>
+    <div class="section-title">【雲端成果附件】：</div>
+    <div style="word-break:break-all;">${link}</div>
+  </td></tr>
+  <tr><td style="min-height:150px">
+    <div style="color:#666;font-size:11pt">照片（可附上實習現場或作品截圖）</div>
+  </td></tr></table>
+  <div style="font-size:10pt;color:#555;margin:15px 0">註：本表應於每週最後一個工作日結束前完成，請單位主管簽核，並交由實習學生存查，謝謝！</div>
+  <div class="sign">實習學生簽名或蓋章：</div>
+  <div class="sign">實習主管簽名或蓋章：</div>
+  <div class="sign">導師簽名或蓋章：</div>
+  <div class="footer">Kun Shan University · www.ksu.edu.tw</div>
+  <script>window.onload=()=>{setTimeout(()=>{window.print();},500)};<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ══════════════════════════════════════════
+//  密室
+// ══════════════════════════════════════════
+function switchSecretTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById(id).classList.add('active');
+}
+function renderSecret(){
+  const sm=document.getElementById('scMemoList');if(!sm)return;sm.innerHTML='';
+  memos.forEach(m=>{
+    sm.innerHTML+=`<div style="padding:11px;background:rgba(244,63,94,.05);border-left:3px solid var(--danger);font-size:13px;color:var(--t1);margin-bottom:8px;border-radius:0 var(--r) var(--r) 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong style="color:var(--danger)">📌</strong>
+      ${isAdmin?`<button class="btn-danger" style="padding:2px 7px" onclick="triggerDelete('${m.id}','備忘')">✕</button>`:''}
+      </div>${m.text}</div>`;
+  });
+  const dy=document.getElementById('tab-dy');if(!dy)return;dy.innerHTML='';
+  diaries.forEach(d=>{
+    const isMe=d.author===currentUser;
+    dy.innerHTML+=`<div style="background:var(--bg);border:1px solid var(--line);padding:18px;border-radius:var(--r);margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:11px;border-bottom:1px dashed var(--line);padding-bottom:11px">
+        <strong style="color:var(--accent)">${d.author} (${d.week})</strong>
+        <span style="font-size:12px;color:var(--t2)">${d.date}</span>
+      </div>
+      <div style="font-size:13px;color:var(--t1);white-space:pre-wrap;margin-bottom:14px;background:rgba(0,0,0,.2);padding:11px;border-radius:var(--r)">${d.text}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        ${d.link?`<a href="${d.link}" target="_blank" style="font-size:13px;font-weight:600;text-decoration:underline">🔗 附件</a>`:'<span style="font-size:12px;color:var(--t2)">無附件</span>'}
+        <div style="display:flex;gap:8px">
+          <button class="btn-ghost" style="padding:4px 8px; font-size:12px;" onclick="openExportSingle('${d.id}')">📄 匯出</button>
+          ${isMe?`<button class="btn-danger" onclick="triggerDelete('${d.id}','${d.author}的週記')">刪除</button>`:`<span style="font-size:11px;color:var(--t2)">唯讀</span>`}
+        </div>
+      </div>
+    </div>`;
+  });
+  const ck=document.getElementById('tab-ck');if(!ck)return;ck.innerHTML='';
+  if(!checkins.length){ck.innerHTML=`<div style="color:var(--t2);text-align:center;padding:20px">尚無打卡紀錄</div>`;return;}
+  checkins.forEach(c=>{
+    ck.innerHTML+=`<div style="background:var(--bg);border-left:3px solid var(--blue);padding:14px;margin-bottom:10px;border-radius:0 var(--r) var(--r) 0">
+      <div style="font-size:13px;color:var(--blue);font-weight:600;margin-bottom:7px;display:flex;justify-content:space-between">
+        <span>👤 ${c.author} · ${c.week}</span><span style="font-size:12px;color:var(--t2)">${c.date}</span>
+      </div>
+      <div style="font-size:13px;color:var(--t1)">${c.note}</div>
+    </div>`;
+  });
+}
+function addMemo(){
+  const t=document.getElementById('scMemoIn').value.trim();if(!t)return;
+  memos.unshift({id:'sm_'+Date.now(),text:t});document.getElementById('scMemoIn').value='';
+  saveAll();renderSecret();showToast('備忘已封存', 'ok');
+}
+
+// ══════════════════════════════════════════
+//  刪除防護
+// ══════════════════════════════════════════
+function triggerDelete(id,name){
+  clearInterval(delTimer);pendingDel=id;
+  document.getElementById('delMask').classList.add('show');
+  document.getElementById('delMsg').textContent=`準備銷毀「${name}」`;
+  let s=5;document.getElementById('delCd').textContent=s;
+  delTimer=setInterval(()=>{s--;document.getElementById('delCd').textContent=s;if(s<=0){clearInterval(delTimer);document.getElementById('delMask').classList.remove('show');execDelete(id);}},1000);
+}
+function cancelDelete(){clearInterval(delTimer);pendingDel=null;document.getElementById('delMask').classList.remove('show');showToast('✅ 已挽救紀錄', 'ok');}
+function execDelete(id){
+  tasks=tasks.filter(x=>x.id!==id);meetings=meetings.filter(x=>x.id!==id);
+  diaries=diaries.filter(x=>x.id!==id);memos=memos.filter(x=>x.id!==id);
+  checkins=checkins.filter(x=>x.id!==id);
+  saveAll();renderViews();if(document.getElementById('sec-mywork').classList.contains('active')) renderMyWork();
+  renderMeetings();renderDiaries();renderMyDiaries();renderSecret();
+  showToast('🗑 已銷毀');
+}
+
+// ══════════════════════════════════════════
+//  工具
+// ══════════════════════════════════════════
+function copyStatus(){
+  const done=tasks.filter(t=>t.status==='done').length;
+  const stuck=tasks.filter(t=>t.status==='stuck');
+  let txt=`【2026日本實習進度播報 · ${new Date().toLocaleDateString('zh-TW')}】\n整體完成度：${done}/${tasks.length} 項（${Math.round(done/tasks.length*100)}%）\n卡關：${stuck.length} 項\n`;
+  if(stuck.length)txt+='\n⚠ 卡關任務：\n'+stuck.map(t=>`· ${t.title}（${t.owner}）`).join('\n');
+  txt+='\n\n請各組更新看板並回報進度 🙏';
+  navigator.clipboard.writeText(txt).then(()=>showToast('📢 進度播報已複製', 'ok'));
+}
+
+function showToast(msg,type=''){
+  const wrap=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  el.className='toast'+(type?' '+type:'');el.textContent=msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350);},3000);
+}
+
+// ══════════════════════════════════════════
+//  初始化
+// ══════════════════════════════════════════
+document.getElementById('mtgDate').valueAsDate=new Date();
+saveAll();
+</script>
+</body>
+</html>
