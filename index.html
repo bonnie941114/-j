@@ -3,272 +3,412 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHIBA 2026 日本海外實習控制台</title>
+<title>千言萬語葉葉精彩 · 2026 日本海外實習控制台</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 <style>
-/* ── 舒適生產力美學：深海藍灰 + 琥珀黃 + 銀色科技幾何裝飾 ── */
 :root {
-  --bg: #0f172a; 
-  --bg-panel: #1e293b; 
-  --bg-hover: #334155; 
-  --line: rgba(255,255,255,0.08); 
-  --line-s: rgba(255,255,255,0.15); 
-  
-  --t0: #f8fafc; 
-  --t1: #cbd5e1; 
-  --t2: #94a3b8; 
-  
-  --accent: #fbbf24; 
-  --accent-l: rgba(251,191,36,0.15); 
-  --silver: #c0c0c0; 
-  --silver-d: rgba(192,192,192,0.2);
-
-  --green: #10b981; 
-  --blue: #0ea5e9; 
-  --purple: #8b5cf6; 
-  --danger: #f43f5e; 
-  
-  --r: 8px; --r-lg: 16px; 
-  --shadow: 0 4px 6px -1px rgba(0,0,0,.3),0 2px 4px -1px rgba(0,0,0,.15); 
-  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,.5),0 4px 10px -2px rgba(0,0,0,.3); 
-  
-  --qi: #0ea5e9; --qi-bg: rgba(14,165,233,0.08); 
-  --vi: #fbbf24; --vi-bg: rgba(251,191,36,0.08); 
-  --cut: #8b5cf6; --cut-bg: rgba(139,92,246,0.08); 
-  --all: #10b981; --all-bg: rgba(16,185,129,0.08);
+  --bg:#0f172a; --bg-panel:#1e293b; --bg-hover:#334155;
+  --line:rgba(255,255,255,0.08); --line-s:rgba(255,255,255,0.15);
+  --t0:#f8fafc; --t1:#cbd5e1; --t2:#94a3b8;
+  --accent:#fbbf24; --accent-l:rgba(251,191,36,0.15);
+  --green:#10b981; --blue:#0ea5e9; --purple:#8b5cf6; --danger:#f43f5e;
+  --r:8px; --r-lg:16px;
+  --shadow:0 4px 6px -1px rgba(0,0,0,.3),0 2px 4px -1px rgba(0,0,0,.15);
+  --shadow-lg:0 10px 25px -3px rgba(0,0,0,.5),0 4px 10px -2px rgba(0,0,0,.3);
+  /* 組別色彩區塊 */
+  --qi:#0ea5e9; --qi-bg:rgba(14,165,233,0.08);
+  --vi:#fbbf24; --vi-bg:rgba(251,191,36,0.08);
+  --cut:#8b5cf6; --cut-bg:rgba(139,92,246,0.08);
+  --all:#10b981; --all-bg:rgba(16,185,129,0.08);
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-  background-color: var(--bg); color: var(--t1); 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; 
-  font-size: 14px; line-height: 1.6; height: 100vh; overflow: hidden; 
-  background-image: 
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 8px; }
-input, select, textarea, button { font-family: inherit; font-size: inherit; color: inherit; outline: none; }
-button { cursor: pointer; transition: all .2s; }
-
-.silver-decor { position: relative; }
-.silver-decor::before { content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: var(--silver); border-top-left-radius: var(--r-lg); }
-.silver-decor::after { content: ''; position: absolute; bottom: 0; right: 0; width: 30px; height: 2px; background: var(--silver); border-bottom-right-radius: var(--r-lg); }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;font-size:14px;line-height:1.6;height:100vh;overflow:hidden;background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:20px 20px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--bg-hover);border-radius:8px}
+input,select,textarea,button{font-family:inherit;font-size:inherit;color:inherit;outline:none}
+button{cursor:pointer;transition:all .2s}
 
 /* ── 登入 ── */
-.login-wrap { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.login-card { background: var(--bg-panel); width: 520px; max-width: 100%; padding: 40px; border-radius: var(--r-lg); border: 1px solid var(--line-s); box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden; }
-.login-title { font-size: 22px; font-weight: 800; color: var(--t0); margin-bottom: 6px; letter-spacing: .04em; }
-.login-sub { color: var(--t2); font-size: 13px; margin-bottom: 28px; }
-.login-divider { font-size: 11px; color: var(--silver); font-weight: 700; letter-spacing: .06em; margin-bottom: 14px; text-transform: uppercase; }
-.char-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-.char-btn { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 6px; cursor: pointer; transition: all .18s; position: relative; }
-.char-name { font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 3px; }
-.char-role { font-size: 10px; color: var(--t2); font-weight: 600; }
-.char-btn:hover { border-color: var(--silver); transform: translateY(-2px); }
-.char-btn.selected { border-color: var(--accent); background: var(--accent-l); box-shadow: 0 0 10px var(--accent-l); }
-.char-btn.selected .char-name { color: var(--accent); }
-.pw-mask { position: absolute; inset: 0; background: rgba(15,23,42,.96); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .3s; padding: 30px; }
-.pw-mask.active { opacity: 1; pointer-events: auto; }
-.pw-input { background: var(--bg-panel); border: 2px solid var(--accent); color: var(--t0); font-size: 24px; letter-spacing: .25em; text-align: center; padding: 12px; border-radius: var(--r); width: 80%; margin: 18px 0; font-weight: bold; }
-.pw-actions { display: flex; gap: 10px; width: 80%; }
-.btn-primary { background: var(--accent); color: #000; font-weight: 700; border: none; padding: 10px 16px; border-radius: var(--r); flex: 1; }
-.btn-primary:hover { background: #fcd34d; }
-.btn-secondary { background: var(--bg-hover); color: var(--t1); border: none; padding: 10px 16px; border-radius: var(--r); flex: 1; }
-.guest-link { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--silver); text-decoration: underline; cursor: pointer; }
+.login-wrap{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--bg-panel);width:520px;max-width:100%;padding:40px;border-radius:var(--r-lg);border:1px solid var(--line-s);box-shadow:var(--shadow-lg);text-align:center;position:relative;overflow:hidden}
+.login-title{font-size:22px;font-weight:800;color:var(--t0);margin-bottom:6px;letter-spacing:.04em}
+.login-sub{color:var(--t2);font-size:13px;margin-bottom:28px}
+.login-divider{font-size:11px;color:var(--t2);font-weight:700;letter-spacing:.06em;margin-bottom:14px;text-transform:uppercase}
+.char-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.char-btn{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px 6px;cursor:pointer;transition:all .18s}
+.char-name{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.char-role{font-size:10px;color:var(--t2);font-weight:600}
+.char-btn:hover{border-color:var(--t2);transform:translateY(-2px)}
+.char-btn.selected{border-color:var(--accent);background:var(--accent-l)}
+.char-btn.selected .char-name{color:var(--accent)}
+.pw-mask{position:absolute;inset:0;background:rgba(15,23,42,.96);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:30px}
+.pw-mask.active{opacity:1;pointer-events:auto}
+.pw-input{background:var(--bg-panel);border:2px solid var(--accent);color:var(--t0);font-size:22px;letter-spacing:.25em;text-align:center;padding:12px;border-radius:var(--r);width:80%;margin:18px 0;font-weight:bold}
+.pw-actions{display:flex;gap:10px;width:80%}
+.btn-primary{background:var(--accent);color:#000;font-weight:700;border:none;padding:10px 16px;border-radius:var(--r)}
+.btn-primary:hover{background:#fcd34d}
+.btn-secondary{background:var(--bg-hover);color:var(--t1);border:none;padding:10px 16px;border-radius:var(--r)}
+.guest-link{display:inline-block;margin-top:14px;font-size:13px;color:var(--t2);text-decoration:underline;cursor:pointer}
+.guest-link:hover{color:var(--accent)}
 
-/* ── 靜態提醒橫幅 ── */
-.static-alert-bar { background: var(--bg-panel); border-bottom: 1px solid var(--line-s); padding: 12px 24px; display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
-.alert-box { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
-.alert-icon { font-size: 18px; }
-.alert-text { font-size: 12px; font-weight: 600; color: var(--t1); line-height: 1.4; }
-.alert-text strong { color: var(--accent); font-weight: 800; }
+/* ── 頂部提醒橫幅 ── */
+.alert-bar{background:linear-gradient(90deg,rgba(244,63,94,.12),rgba(251,191,36,.08));border-bottom:1px solid rgba(244,63,94,.25);padding:9px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;min-height:42px}
+.alert-items{display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex:1}
+.alert-pill{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.alert-pill.red{color:var(--danger)}
+.alert-pill.yellow{color:var(--accent)}
+.alert-pill.blue{color:var(--blue)}
+.alert-pill.green{color:var(--green)}
+.alert-bar-actions{display:flex;gap:8px;flex-shrink:0}
 
 /* ── 框架 ── */
-.app { display: flex; height: calc(100vh - 66px); } 
-.sidebar { width: 240px; background: var(--bg-panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; flex-shrink: 0; z-index: 10; }
-.sb-header { padding: 20px; border-bottom: 1px solid var(--line); }
-.sb-logo { font-size: 15px; font-weight: 800; color: var(--t0); display: flex; align-items: center; gap: 10px; }
-.sb-logo-icon { background: var(--accent); color: #000; width: 30px; height: 30px; border-radius: var(--r); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11px; flex-shrink: 0; }
-.sb-user { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 10px; padding-left: 40px; }
-.sb-scope-badge { margin: 12px 16px 0; padding: 8px 12px; border-radius: var(--r); font-size: 12px; font-weight: 700; text-align: center; border: 1px solid; }
-.nav-menu { padding: 14px 12px; flex: 1; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; gap: 11px; padding: 11px 14px; color: var(--t2); border-radius: var(--r); font-weight: 600; margin-bottom: 3px; border-left: 3px solid transparent; background: transparent; width: 100%; text-align: left; font-size: 13px; }
-.nav-item:hover { color: var(--t0); background: var(--bg-hover); }
-.nav-item.active { color: var(--accent); background: var(--accent-l); border-left-color: var(--accent); }
+.app{display:flex;height:calc(100vh - 42px)}
+.sidebar{width:240px;background:var(--bg-panel);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.sb-header{padding:20px;border-bottom:1px solid var(--line)}
+.sb-logo{font-size:15px;font-weight:800;color:var(--t0);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{background:var(--accent);color:#000;width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;flex-shrink:0}
+.sb-user{font-size:12px;color:var(--accent);font-weight:600;margin-top:10px;padding-left:40px}
 
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.topbar { height: 60px; background: var(--bg-panel); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; flex-shrink: 0; }
-.page-title { font-size: 17px; font-weight: 700; color: var(--t0); display: flex; align-items: center; gap: 8px;}
-.content { flex: 1; padding: 28px; overflow-y: auto; }
-.section { display: none; animation: fadeIn .2s ease; }
-.section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+/* 組別識別區塊 */
+.sb-scope-badge{margin:12px 16px 0;padding:8px 12px;border-radius:var(--r);font-size:12px;font-weight:700;text-align:center;border:1px solid}
+.scope-qi{background:var(--qi-bg);color:var(--qi);border-color:rgba(14,165,233,.25)}
+.scope-vi{background:var(--vi-bg);color:var(--vi);border-color:rgba(251,191,36,.25)}
+.scope-cut{background:var(--cut-bg);color:var(--cut);border-color:rgba(139,92,246,.25)}
+.scope-admin{background:rgba(16,185,129,.08);color:var(--green);border-color:rgba(16,185,129,.25)}
+.scope-guest{background:rgba(148,163,184,.08);color:var(--t2);border-color:var(--line-s)}
 
-/* ── 進度區與里程碑 ── */
-.dash-prog-wrap { background: var(--bg-panel); padding: 22px 26px; border-radius: var(--r-lg); border: 1px solid var(--line); box-shadow: var(--shadow); margin-bottom: 22px; }
-.dp-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
-.dp-title { font-size: 16px; font-weight: 800; color: var(--t0); }
-.dp-pct { font-size: 28px; font-weight: 900; color: var(--accent); line-height: 1; }
-.track-lg { height: 14px; background: var(--bg); border-radius: 8px; overflow: hidden; display: flex; border: 1px solid var(--line-s); }
-.fill-lg { height: 100%; transition: width .6s ease; }
-.milestone-tracker { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
-.ms-item { flex: 1; background: var(--bg); padding: 12px; border-radius: var(--r); border: 1px solid var(--line); text-align: center; }
-.ms-item.done { border-color: var(--green); background: rgba(16,185,129,0.05); }
-.ms-title { font-size: 12px; font-weight: 700; color: var(--t0); margin-bottom: 4px; }
-.ms-status { font-size: 11px; color: var(--t2); }
-.ms-item.done .ms-status { color: var(--green); font-weight: 700; }
+.nav-menu{padding:14px 12px;flex:1;overflow-y:auto}
+.nav-section-label{font-size:10px;font-weight:700;color:var(--t2);letter-spacing:.08em;padding:10px 8px 5px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 14px;color:var(--t2);border-radius:var(--r);font-weight:600;margin-bottom:3px;border-left:3px solid transparent;background:transparent;width:100%;text-align:left;font-size:13px}
+.nav-item:hover{color:var(--t0);background:var(--bg-hover)}
+.nav-item.active{color:var(--accent);background:var(--accent-l);border-left-color:var(--accent)}
+.nav-badge{background:var(--danger);color:#fff;font-size:9px;font-weight:900;border-radius:99px;padding:1px 5px;margin-left:auto}
+.nav-item .nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
 
-/* ── 篩選列與視圖 ── */
-.filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: var(--bg-panel); padding: 14px 20px; border-radius: var(--r-lg); border: 1px solid var(--line); box-shadow: var(--shadow); }
-.filter-search { background: var(--bg); border: 1px solid var(--line-s); color: var(--t0); padding: 8px 16px; border-radius: 99px; font-size: 13px; width: 210px; transition: border .2s; }
-.filter-search:focus { border-color: var(--accent); }
-.chip { background: var(--bg); border: 1px solid var(--line-s); color: var(--silver); padding: 6px 15px; border-radius: 99px; font-size: 12px; font-weight: 700; transition: all .15s; }
-.chip.active { background: var(--accent-l); color: var(--accent); border-color: var(--accent); }
-.view-toggles { margin-left: auto; display: flex; background: var(--bg); border: 1px solid var(--line-s); border-radius: var(--r); overflow: hidden; }
-.v-btn { background: transparent; border: none; color: var(--t2); padding: 7px 15px; font-size: 12px; font-weight: 700; }
-.v-btn.active { background: var(--bg-hover); color: var(--t0); }
+.sb-quest-btn{margin:0 12px 12px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:10px;border-radius:var(--r);font-weight:700;font-size:13px;width:calc(100% - 24px);animation:pulse-border 2.5s infinite}
+.sb-quest-btn:hover{background:var(--accent-l)}
+.sb-quest-btn.checked{animation:none;border-color:var(--green);color:var(--green)}
+@keyframes pulse-border{0%{box-shadow:0 0 0 0 rgba(251,191,36,.35)}70%{box-shadow:0 0 0 7px rgba(251,191,36,0)}100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}}
+
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:60px;background:var(--bg-panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0}
+.page-title{font-size:17px;font-weight:700;color:var(--t0)}
+.topbar-r{display:flex;gap:10px;align-items:center}
+.content{flex:1;padding:28px;overflow-y:auto}
+.section{display:none;animation:fadeIn .25s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── 打卡彈出 ── */
+.quest-mask{position:fixed;inset:0;background:rgba(15,23,42,.88);backdrop-filter:blur(5px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.quest-mask.show{display:flex}
+.quest-card{background:var(--bg-panel);width:860px;max-width:96%;max-height:92vh;border-radius:var(--r-lg);border:1px solid var(--line-s);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;animation:fadeIn .2s ease}
+.qc-header{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.qc-body{padding:22px 24px;overflow-y:auto;display:flex;gap:22px}
+.qc-left{flex:1;min-width:0}
+.qc-right{width:300px;background:var(--bg);border-radius:var(--r);padding:18px;border:1px solid var(--line);flex-shrink:0}
+
+/* 週次標籤頁 */
+.week-tabs{display:flex;gap:6px;margin-bottom:18px;overflow-x:auto;padding-bottom:6px}
+.w-tab{background:var(--bg);border:1px solid var(--line);color:var(--t2);padding:7px 14px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;position:relative}
+.w-tab:hover{color:var(--t1)}
+.w-tab.active{background:var(--accent-l);color:var(--accent);border-color:var(--accent)}
+.w-tab .week-dot-row{display:flex;gap:3px;justify-content:center;margin-top:4px}
+.w-dot{width:6px;height:6px;border-radius:50%;background:var(--bg-hover)}
+.w-dot.done{background:var(--green)}
+.w-dot.progress{background:var(--blue)}
+.w-dot.stuck{background:var(--danger)}
+
+/* 打卡任務清單 */
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:13px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);margin-bottom:9px;transition:all .18s}
+.check-item.done{border-color:rgba(16,185,129,.25);opacity:.75}
+.c-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .15s}
+.check-item.done .c-box{background:var(--green);border-color:var(--green)}
+.check-item.done .c-box::after{content:'✓';color:#fff;font-size:12px;font-weight:bold}
+.c-text{font-size:13px;color:var(--t0);font-weight:600;line-height:1.5}
+.check-item.done .c-text{text-decoration:line-through;color:var(--t2)}
+.c-tag-sm{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+
+/* 打卡歷史 */
+.history-log{font-size:13px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:13px;line-height:1.6}
+.history-log:last-child{border:none;padding:0;margin:0}
+
+/* ── 進度區 ── */
+.dash-prog-wrap{background:var(--bg-panel);padding:22px 26px;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--shadow);margin-bottom:22px}
+.dp-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.dp-title{font-size:16px;font-weight:800;color:var(--t0)}
+.dp-pct{font-size:28px;font-weight:900;color:var(--accent);line-height:1}
+.track-lg{height:14px;background:var(--bg);border-radius:8px;overflow:hidden;display:flex;border:1px solid var(--line-s)}
+.fill-lg{height:100%;transition:width .6s ease}
+
+/* ── 提醒欄（看板內） ── */
+.reminders-box{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.reminder-card{background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;border-left:3px solid}
+.reminder-card.dep{border-left-color:var(--danger)}
+.reminder-card.sched{border-left-color:var(--accent)}
+.reminder-card.rule{border-left-color:var(--blue)}
+.rm-title{font-size:12px;font-weight:700;color:var(--t0);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.rm-body{font-size:12px;color:var(--t2);line-height:1.65}
+
+/* ── 篩選列 ── */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;background:var(--bg-panel);padding:14px 20px;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--shadow)}
+.filter-search{background:var(--bg);border:1px solid var(--line-s);color:var(--t0);padding:8px 16px;border-radius:99px;font-size:13px;width:210px;transition:border .2s}
+.filter-search:focus{border-color:var(--accent)}
+.chip{background:var(--bg);border:1px solid var(--line-s);color:var(--t2);padding:6px 15px;border-radius:99px;font-size:12px;font-weight:700;transition:all .15s}
+.chip:hover{color:var(--t1)}
+.chip.active{background:var(--accent-l);color:var(--accent);border-color:var(--accent)}
+.chip.qi-chip.active{background:var(--qi-bg);color:var(--qi);border-color:rgba(14,165,233,.4)}
+.chip.vi-chip.active{background:var(--vi-bg);color:var(--vi);border-color:rgba(251,191,36,.35)}
+.chip.cut-chip.active{background:var(--cut-bg);color:var(--cut);border-color:rgba(139,92,246,.35)}
+.view-toggles{margin-left:auto;display:flex;background:var(--bg);border:1px solid var(--line-s);border-radius:var(--r);overflow:hidden}
+.v-btn{background:transparent;border:none;color:var(--t2);padding:7px 15px;font-size:12px;font-weight:700}
+.v-btn.active{background:var(--bg-hover);color:var(--t0)}
 
 /* ── 看板 ── */
-.board-view { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 14px; min-height: calc(100vh - 400px); }
-.board-view.hidden { display: none; }
-.col { background: var(--bg-panel); border-radius: var(--r-lg); width: 275px; flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid var(--line); }
-.col.drag-over { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-l); }
-.col-header { padding: 14px 18px; border-bottom: 1px solid var(--line); }
-.col-title { font-size: 13px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.col-count { background: var(--bg); padding: 2px 10px; border-radius: 12px; font-size: 12px; color: var(--t2); font-weight: 700; border: 1px solid var(--line-s); }
-.track-sm { height: 5px; background: var(--bg); border-radius: 99px; overflow: hidden; }
-.fill-sm { height: 100%; transition: width .4s ease; }
-.col-cards { padding: 14px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-.card { background: var(--bg); border: 1px solid var(--line-s); border-radius: var(--r); padding: 15px; cursor: grab; box-shadow: var(--shadow); transition: all .2s; position: relative; overflow: hidden; }
-.card:hover { border-color: var(--silver); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.card-indicator { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
-.card-header { display: flex; justify-content: space-between; margin-bottom: 11px; align-items: flex-start; }
-.c-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 4px; border: 1px solid; background: transparent; }
-.c-title { font-size: 13px; font-weight: 600; color: var(--t0); margin-bottom: 14px; line-height: 1.55; }
-.c-footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--t2); align-items: center; font-weight: 600; }
+.board-view{display:flex;gap:18px;overflow-x:auto;padding-bottom:14px;min-height:calc(100vh - 400px)}
+.board-view.hidden{display:none}
+.col{background:var(--bg-panel);border-radius:var(--r-lg);width:275px;flex-shrink:0;display:flex;flex-direction:column;border:1px solid var(--line);transition:border-color .2s}
+.col.drag-over{border-color:var(--accent)}
+.col-header{padding:14px 18px;border-bottom:1px solid var(--line)}
+.col-title{font-size:13px;font-weight:800;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.col-count{background:var(--bg);padding:2px 10px;border-radius:12px;font-size:12px;color:var(--t2);font-weight:700;border:1px solid var(--line-s)}
+.track-sm{height:5px;background:var(--bg);border-radius:99px;overflow:hidden}
+.fill-sm{height:100%;transition:width .4s ease}
+.col-cards{padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+
+/* ── 任務卡片 ── */
+.card{background:var(--bg);border:1px solid var(--line-s);border-radius:var(--r);padding:15px;cursor:grab;box-shadow:var(--shadow);transition:all .2s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--t2);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.card.dragging{opacity:.3;cursor:grabbing}
+.card-indicator{position:absolute;left:0;top:0;bottom:0;width:4px}
+.card-header{display:flex;justify-content:space-between;margin-bottom:11px;align-items:flex-start}
+.c-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;border:1px solid;background:transparent}
+.c-title{font-size:13px;font-weight:600;color:var(--t0);margin-bottom:14px;line-height:1.55}
+.c-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);align-items:center;font-weight:600}
 
 /* ── 列表視圖 ── */
-.list-view { display: none; }
-.list-view.active { display: block; }
-.list-week-label { font-size: 12px; font-weight: 800; color: var(--silver); margin: 22px 0 11px; display: flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: .06em; }
-.list-week-label::after { content: ''; flex: 1; height: 1px; background: var(--line-s); }
-.list-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 18px; align-items: center; background: var(--bg-panel); border: 1px solid var(--line); padding: 14px 22px; border-radius: var(--r); margin-bottom: 7px; transition: all .15s; }
-.list-row:hover { transform: translateX(4px); border-color: var(--silver); }
+.list-view{display:none}
+.list-view.active{display:block}
+.list-week-label{font-size:12px;font-weight:800;color:var(--t2);margin:22px 0 11px;display:flex;align-items:center;gap:12px;text-transform:uppercase;letter-spacing:.06em}
+.list-week-label::after{content:'';flex:1;height:1px;background:var(--line-s)}
+.list-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:18px;align-items:center;background:var(--bg-panel);border:1px solid var(--line);padding:14px 22px;border-radius:var(--r);margin-bottom:7px;transition:all .15s}
+.list-row:hover{transform:translateX(4px);border-color:var(--t2)}
 
 /* ── 表單通用 ── */
-.input-group { margin-bottom: 15px; }
-.input-group label { display: block; font-size: 12px; color: var(--t2); margin-bottom: 5px; font-weight: 600; }
-.input-box { width: 100%; background: var(--bg); border: 1px solid var(--line-s); color: var(--t0); padding: 9px 13px; border-radius: var(--r); transition: border .2s; font-size: 13px; }
-.input-box:focus { border-color: var(--accent); }
-.btn-ghost { background: transparent; border: 1px solid var(--line-s); color: var(--t1); padding: 8px 16px; border-radius: var(--r); font-weight: 600; }
-.btn-ghost:hover { background: var(--bg-hover); color: var(--t0); border-color: var(--silver); }
-.btn-danger { background: rgba(244,63,94,.1); color: var(--danger); border: 1px solid rgba(244,63,94,.3); padding: 5px 11px; border-radius: 4px; font-size: 12px; font-weight: 700; }
-.btn-danger:hover { background: var(--danger); color: #fff; }
-.btn-icon { background: transparent; border: none; color: var(--t2); padding: 4px; border-radius: 4px; font-size: 15px; }
-.btn-icon:hover { background: var(--bg-hover); color: var(--t0); }
+.input-group{margin-bottom:15px}
+.input-group label{display:block;font-size:12px;color:var(--t2);margin-bottom:5px;font-weight:600}
+.input-box{width:100%;background:var(--bg);border:1px solid var(--line-s);color:var(--t0);padding:9px 13px;border-radius:var(--r);transition:border .2s;font-size:13px}
+.input-box:focus{border-color:var(--accent)}
+.btn-ghost{background:transparent;border:1px solid var(--line-s);color:var(--t1);padding:8px 16px;border-radius:var(--r);font-weight:600}
+.btn-ghost:hover{background:var(--bg-hover);color:var(--t0)}
+.btn-danger{background:rgba(244,63,94,.1);color:var(--danger);border:1px solid rgba(244,63,94,.3);padding:5px 11px;border-radius:4px;font-size:12px;font-weight:700}
+.btn-danger:hover{background:var(--danger);color:#fff}
+.btn-icon{background:transparent;border:none;color:var(--t2);padding:4px;border-radius:4px;font-size:15px}
+.btn-icon:hover{background:var(--bg-hover);color:var(--t0)}
 
-/* ── 面板與分頁 ── */
-.panel-wrap { display: grid; grid-template-columns: 310px 1fr; gap: 22px; }
-.panel-box { background: var(--bg-panel); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; box-shadow: var(--shadow); }
-.tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
-.tab-btn { padding: 10px 18px; background: transparent; border: none; color: var(--t2); font-weight: 600; cursor: pointer; position: relative; font-size: 13px; }
-.tab-btn.active { color: var(--accent); }
-.tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); }
-.tab-content { display: none; animation: fadeIn .2s ease; }
-.tab-content.active { display: block; }
-.secret-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+/* ── 面板佈局 ── */
+.panel-wrap{display:grid;grid-template-columns:310px 1fr;gap:22px}
+.panel-box{background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow)}
+
+/* ── 週記分頁 ── */
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab-btn{padding:10px 18px;background:transparent;border:none;color:var(--t2);font-weight:600;cursor:pointer;position:relative;font-size:13px;transition:color .2s}
+.tab-btn.active{color:var(--accent)}
+.tab-btn.active::after{content:'';position:absolute;bottom:-1px;left:0;width:100%;height:2px;background:var(--accent)}
+.tab-content{display:none;animation:fadeIn .25s ease}
+.tab-content.active{display:block}
+
+/* ── 週記篇數統計 ── */
+.dy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.dy-card{background:var(--bg);border:1px solid var(--line);padding:16px;border-radius:var(--r);text-align:center}
+.dy-name{font-size:13px;font-weight:700;color:var(--t0);margin-bottom:6px}
+.dy-num{font-size:30px;font-weight:800;line-height:1;margin-bottom:5px}
+.dy-track{height:4px;background:var(--bg-hover);border-radius:99px;overflow:hidden;margin-top:8px}
+.dy-fill{height:100%;background:linear-gradient(90deg,#b45309,var(--accent));border-radius:99px;transition:width .5s}
+
+/* ── 目標追蹤 ── */
+.goals-grid{display:flex;flex-direction:column;gap:12px}
+.goal-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:16px;border-left:4px solid var(--line-s)}
+.goal-card.qi{border-left-color:var(--qi)}
+.goal-card.vi{border-left-color:var(--vi)}
+.goal-card.cut{border-left-color:var(--cut)}
+.goal-card.all{border-left-color:var(--green)}
+.goal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px}
+.goal-title{font-size:13px;font-weight:700;color:var(--t0);line-height:1.45;flex:1}
+.goal-status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.gs-ok{background:rgba(16,185,129,.15);color:var(--green)}
+.gs-prog{background:rgba(14,165,233,.15);color:var(--blue)}
+.gs-pending{background:var(--bg-hover);color:var(--t2)}
+.gs-risk{background:rgba(244,63,94,.12);color:var(--danger)}
+.goal-owner{font-size:12px;color:var(--t2);font-weight:600;margin-bottom:6px}
+.goal-note{font-size:12px;color:var(--t2);white-space:pre-wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:none}
+.goal-card.expanded .goal-note{display:block}
+.goal-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+
+/* ── 密室 ── */
+.secret-wrap{display:grid;grid-template-columns:300px 1fr;gap:22px}
 
 /* ── Modals ── */
-.del-mask, .modal-mask { position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 8000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.del-mask.show, .modal-mask.show { display: flex; }
-.del-box { background: var(--bg-panel); border: 2px solid var(--danger); padding: 40px; border-radius: var(--r-lg); text-align: center; width: 440px; box-shadow: 0 0 40px rgba(244,63,94,0.2); }
-.modal-content { background: var(--bg-panel); border: 1px solid var(--line-s); padding: 32px; border-radius: var(--r-lg); width: 460px; box-shadow: var(--shadow-lg); animation: fadeIn 0.2s ease; }
-.cd-text { font-size: 56px; font-weight: 900; color: var(--danger); margin: 20px 0; line-height: 1; }
-.modal-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.modal-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.del-mask,.modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.92);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.del-mask.show,.modal-mask.show{display:flex}
+.del-box{background:var(--bg-panel);border:2px solid var(--danger);padding:36px;border-radius:var(--r-lg);text-align:center;width:420px;box-shadow:0 0 40px rgba(244,63,94,.2)}
+.modal-content{background:var(--bg-panel);border:1px solid var(--line-s);padding:28px;border-radius:var(--r-lg);width:460px;box-shadow:var(--shadow-lg);animation:fadeIn .2s ease}
+.cd-text{font-size:52px;font-weight:900;color:var(--danger);margin:18px 0;line-height:1}
+.modal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.modal-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-.toast-container { position: fixed; bottom: 32px; right: 32px; display: flex; flex-direction: column; gap: 12px; z-index: 10000; }
-.toast { background: var(--bg-panel); border-left: 4px solid var(--accent); padding: 16px 24px; border-radius: var(--r); box-shadow: var(--shadow-lg); color: var(--t0); font-weight: 600; transform: translateX(120%); transition: transform 0.3s; }
-.toast.show { transform: translateX(0); }
+/* ── Toast ── */
+.toast-container{position:fixed;bottom:28px;right:28px;display:flex;flex-direction:column;gap:10px;z-index:10000}
+.toast{background:var(--bg-panel);border-left:4px solid var(--accent);padding:14px 20px;border-radius:var(--r);box-shadow:var(--shadow-lg);color:var(--t0);font-weight:600;transform:translateX(120%);transition:transform .3s cubic-bezier(.1,.9,.2,1);font-size:13px;max-width:320px}
+.toast.show{transform:translateX(0)}
+.toast.err{border-left-color:var(--danger);color:var(--danger)}
+.toast.ok{border-left-color:var(--green);color:var(--green)}
 
-/* 匯出預覽區 */
-.export-preview { background:#fff; border:1px solid #ccc; border-radius:4px; padding:24px; font-family:"標楷體","新細明體",serif; font-size:14px; color:#000; line-height:1.8; max-height:45vh; overflow-y:auto; margin-top:16px; position:relative; }
+/* 匯出預覽 */
+.export-preview{background:var(--bg);border:1px solid var(--line-s);border-radius:var(--r);padding:18px;font-family:"Noto Sans TC",sans-serif;font-size:13px;color:var(--t1);line-height:1.9;max-height:50vh;overflow-y:auto;white-space:pre-wrap;margin-top:16px}
 </style>
 </head>
 <body>
 
 <!-- ══ 登入 ══ -->
 <div class="login-wrap" id="loginScreen">
-  <div class="login-card silver-decor">
+  <div class="login-card">
     <div class="login-title">⚡ 控制基地驗證</div>
-    <div class="login-sub">CHIBA 2026 日本實習專案 · 選擇您的身分</div>
+    <div class="login-sub">千言萬語葉葉精彩 · 2026 日本海外實習 · 選擇你的身分</div>
+    <div class="login-divider">選擇作戰角色</div>
     <div class="char-grid">
-      <button class="char-btn" onclick="selectChar('Boni',this)"><div class="char-name">Boni</div><div class="char-role">召集人・高管</div></button>
-      <button class="char-btn" onclick="selectChar('儒銘',this)"><div class="char-name">儒銘</div><div class="char-role">✍ 企劃組</div></button>
-      <button class="char-btn" onclick="selectChar('珀翊',this)"><div class="char-name">珀翊</div><div class="char-role">✍ 企劃組</div></button>
-      <button class="char-btn" onclick="selectChar('庭葦',this)"><div class="char-name">庭葦</div><div class="char-role">✍ 企劃組</div></button>
-      <button class="char-btn" onclick="selectChar('宜彥',this)"><div class="char-name">宜彥</div><div class="char-role">🎨 視覺組</div></button>
-      <button class="char-btn" onclick="selectChar('俊安',this)"><div class="char-name">俊安</div><div class="char-role">🎬 剪片組</div></button>
-      <button class="char-btn" onclick="selectChar('郁馨',this)"><div class="char-name">郁馨</div><div class="char-role">🎬 剪片組</div></button>
-      <button class="char-btn" onclick="selectChar('指導老師',this)"><div class="char-name">指導老師</div><div class="char-role">高管・審核</div></button>
+      <div class="char-btn" onclick="selectChar('Boni',this)"><div class="char-name">Boni</div><div class="char-role">召集人・高管</div></div>
+      <div class="char-btn" onclick="selectChar('儒銘',this)"><div class="char-name">儒銘</div><div class="char-role">✍ 企劃組</div></div>
+      <div class="char-btn" onclick="selectChar('珀翊',this)"><div class="char-name">珀翊</div><div class="char-role">✍ 企劃組</div></div>
+      <div class="char-btn" onclick="selectChar('庭葦',this)"><div class="char-name">庭葦</div><div class="char-role">✍ 企劃組</div></div>
+      <div class="char-btn" onclick="selectChar('宜彥',this)"><div class="char-name">宜彥</div><div class="char-role">🎨 視覺組</div></div>
+      <div class="char-btn" onclick="selectChar('俊安',this)"><div class="char-name">俊安</div><div class="char-role">🎬 剪片組</div></div>
+      <div class="char-btn" onclick="selectChar('郁馨',this)"><div class="char-name">郁馨</div><div class="char-role">🎬 剪片組</div></div>
+      <div class="char-btn" onclick="selectChar('指導老師',this)"><div class="char-name">指導老師</div><div class="char-role">高管・審核</div></div>
     </div>
-    <button class="btn-primary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="enterSystem()">進入系統</button>
-    <div class="guest-link" onclick="enterGuestMode()">👁 訪客預覽模式 (僅供展示瀏覽)</div>
-    
+    <button class="btn-primary" style="width:100%;padding:13px;font-size:15px;" onclick="enterSystem()">確認身分 · 進入系統 →</button>
+    <div class="guest-link" onclick="enterGuest()">👁 訪客預覽模式 (完整瀏覽，僅供展示)</div>
     <div class="pw-mask" id="pwMask">
       <h3 style="color:var(--t0);margin-bottom:6px;font-size:17px">🔒 高管身分鎖定</h3>
-      <div style="font-size:13px;color:var(--t2)">請輸入 Boni 專屬安全密碼解鎖權限</div>
+      <div id="pwMaskTitle" style="font-size:13px;color:var(--t2)">請輸入專屬安全密碼</div>
       <input type="password" class="pw-input" id="pwInput" placeholder="••••" maxlength="8" onkeydown="if(event.key==='Enter')verifyPw()">
       <div class="pw-actions">
         <button class="btn-secondary" onclick="closePwMask()">取消</button>
-        <button class="btn-primary" onclick="verifyPw()">安全解鎖</button>
+        <button class="btn-primary" onclick="verifyPw()">解鎖</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="toast-container" id="toastWrap"></div>
-
-<!-- 任務部署 Modal -->
-<div class="modal-mask" id="taskModal">
-  <div class="modal-content silver-decor">
-    <div class="modal-h">
-      <span style="font-size:16px;font-weight:800;color:var(--t0)">部署任務卡片</span>
-      <button class="btn-icon" onclick="closeTaskModal()">✕</button>
+<!-- ══ 打卡牆 Modal ══ -->
+<div class="quest-mask" id="questModal">
+  <div class="quest-card">
+    <div class="qc-header">
+      <h3 style="color:var(--t0);font-size:17px;display:flex;align-items:center;gap:12px;">
+        📝 每日覆盤打卡牆
+        <span style="font-size:12px;color:var(--accent);background:var(--accent-l);padding:3px 10px;border-radius:99px;border:1px solid var(--accent);" id="questUserBadge"></span>
+      </h3>
+      <button class="btn-ghost" onclick="closeQuest()">收合 ✕</button>
     </div>
-    <input type="hidden" id="tkId">
-    <div class="input-group"><label>任務名稱</label><input class="input-box" id="tkTitle" placeholder="描述任務細節..."></div>
-    <div class="modal-2col">
-      <div class="input-group"><label>負責組別</label><select class="input-box" id="tkGroup"><option value="qi">企劃組</option><option value="vi">視覺組</option><option value="cut">剪片組</option><option value="all">全員配合</option></select></div>
-      <div class="input-group"><label>排定週次</label><select class="input-box" id="tkWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select></div>
-    </div>
-    <div class="modal-2col">
-      <div class="input-group"><label>負責人</label><input class="input-box" id="tkOwner" placeholder="如: 宜彥"></div>
-      <div class="input-group"><label>當前進度</label><select class="input-box" id="tkStatus"><option value="todo">未開始</option><option value="progress">進行中</option><option value="review">老師覆核</option><option value="done">已完成</option><option value="stuck">卡關阻礙</option></select></div>
-    </div>
-    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
-      <button class="btn-ghost" onclick="closeTaskModal()">取消</button>
-      <button class="btn-primary" onclick="saveTask()">確認寫入</button>
+    <div class="qc-body">
+      <div class="qc-left">
+        <div style="font-size:11px;color:var(--t2);font-weight:700;margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase">週次推進狀態</div>
+        <div class="week-tabs" id="weekTabs"></div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:11px;font-weight:600;">本週任務推動清單（可直接勾選更新狀態）</div>
+        <div id="questTaskList"></div>
+        <div style="margin-top:16px">
+          <div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:8px">覆盤心得（選填）</div>
+          <textarea class="input-box" id="questNote" rows="3" style="resize:none" placeholder="今日推進狀況、遇到的問題、或需要協調的事項…"></textarea>
+          <button class="btn-primary" id="btnSubmitQuest" onclick="submitCheckin()" style="width:100%;padding:11px;margin-top:10px;font-size:14px;">🔥 確認打卡 · 寫入系統日誌</button>
+        </div>
+      </div>
+      <div class="qc-right">
+        <div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:14px;text-transform:uppercase;letter-spacing:.05em">本週歷史日誌</div>
+        <div id="questHistoryList" style="max-height:360px;overflow-y:auto"></div>
+        <!-- 高管總覽 -->
+        <div id="questAdminWrap" style="display:none;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)">
+          <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase">全員打卡統整</div>
+          <div id="questAdminList"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 防呆刪除確認框 -->
+<!-- ══ 任務 Modal ══ -->
+<div class="modal-mask" id="taskModal" onclick="if(event.target===this)closeTaskModal()">
+  <div class="modal-content">
+    <div class="modal-h"><span style="font-size:16px;font-weight:800;color:var(--t0)">部署任務</span><button class="btn-icon" onclick="closeTaskModal()">✕</button></div>
+    <input type="hidden" id="tkId">
+    <div class="input-group"><label>任務名稱 *</label><input class="input-box" id="tkTitle" placeholder="具體描述任務細項…"></div>
+    <div class="modal-2col">
+      <div class="input-group"><label>執行組別</label>
+        <select class="input-box" id="tkGroup">
+          <option value="qi">✍ 企劃組</option><option value="vi">🎨 視覺組</option><option value="cut">🎬 剪片組</option><option value="all">全員</option>
+        </select>
+      </div>
+      <div class="input-group"><label>週次</label>
+        <select class="input-box" id="tkWeek">
+          <option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-2col">
+      <div class="input-group"><label>負責人</label><input class="input-box" id="tkOwner" placeholder="姓名"></div>
+      <div class="input-group"><label>狀態</label>
+        <select class="input-box" id="tkStatus">
+          <option value="todo">未開始</option><option value="progress">進行中</option><option value="review">老師覆核</option><option value="done">已完成</option><option value="stuck">卡關中</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+      <button class="btn-ghost" onclick="closeTaskModal()">取消</button>
+      <button class="btn-primary" onclick="saveTask()">確認儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 目標追蹤 Modal -->
+<div class="modal-mask" id="goalModal" onclick="if(event.target===this)closeGoalModal()">
+  <div class="modal-content">
+    <div class="modal-h"><span style="font-size:16px;font-weight:800;color:var(--t0)" id="goalModalTitle">新增目標</span><button class="btn-icon" onclick="closeGoalModal()">✕</button></div>
+    <input type="hidden" id="gkId">
+    <div class="input-group"><label>目標名稱 *</label><input class="input-box" id="gkTitle" placeholder="例如：完成招生DM 3份…"></div>
+    <div class="modal-2col">
+      <div class="input-group"><label>負責組別</label>
+        <select class="input-box" id="gkGroup">
+          <option value="qi">✍ 企劃組</option><option value="vi">🎨 視覺組</option><option value="cut">🎬 剪片組</option><option value="all">全員</option>
+        </select>
+      </div>
+      <div class="input-group"><label>狀態</label>
+        <select class="input-box" id="gkStatus">
+          <option value="pending">未開始</option><option value="prog">進行中</option><option value="ok">已達成</option><option value="risk">有風險</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-group"><label>負責人</label><input class="input-box" id="gkOwner" placeholder="姓名"></div>
+    <div class="input-group"><label>備註 / 進度說明</label><textarea class="input-box" id="gkNote" rows="3" placeholder="目前推進狀況、阻礙、下一步行動…"></textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+      <button class="btn-ghost" onclick="closeGoalModal()">取消</button>
+      <button class="btn-primary" onclick="saveGoal()">儲存目標</button>
+    </div>
+  </div>
+</div>
+
+<!-- 刪除確認 -->
 <div class="del-mask" id="delMask">
   <div class="del-box">
-    <h3 style="color: var(--danger); font-size: 22px; margin-bottom: 16px;">⚠ 永久刪除確認</h3>
-    <div id="delMsg" style="color: var(--t1); font-size: 15px; margin-bottom: 16px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r); border: 1px solid var(--line);"></div>
+    <div style="font-size:18px;font-weight:800;color:var(--danger);margin-bottom:10px">⚠ 即將永久刪除</div>
+    <div id="delMsg" style="font-size:14px;color:var(--t1);margin-bottom:4px"></div>
     <div class="cd-text" id="delCd">5</div>
-    <div style="font-size: 13px; color: var(--t2); margin-bottom: 24px; font-weight: 600;">資料銷毀後無法復原，請確認操作。</div>
-    <button class="btn-primary" style="width: 100%; font-size: 15px; padding: 14px;" onclick="cancelDelete()">↩ 立即挽救 (取消)</button>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:20px">倒數歸零後自動銷毀，請立即點擊取消</div>
+    <button class="btn-primary" style="width:100%;padding:14px;font-size:15px" onclick="cancelDelete()">↩ 取消刪除</button>
   </div>
 </div>
 
-<!-- 08_週報表匯出 Modal (精準對齊崑山格式) -->
+<!-- 週報匯出 Modal -->
 <div class="modal-mask" id="exportModal" onclick="if(event.target===this)document.getElementById('exportModal').classList.remove('show')">
-  <div class="modal-content silver-decor" style="width:640px;max-width:96%">
+  <div class="modal-content" style="width:620px;max-width:96%">
     <div class="modal-h">
       <span style="font-size:15px;font-weight:800;color:var(--t0)">📄 匯出崑山科大實習工作週報表</span>
       <button class="btn-icon" onclick="document.getElementById('exportModal').classList.remove('show')">✕</button>
@@ -277,35 +417,31 @@ button { cursor: pointer; transition: all .2s; }
       <div class="input-group"><label>選擇人員</label><select class="input-box" id="expAuthor"></select></div>
       <div class="input-group"><label>選擇週次</label><select class="input-box" id="expWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select></div>
     </div>
-    <div style="font-size:12px; color:var(--accent); margin-bottom:10px;">💡 系統將自動撈取該組員於所選週次內標記為「已完成」的任務清單。</div>
     <!-- 預覽區 -->
     <div class="export-preview" id="exportPreview" style="display:none;margin-bottom:4px"></div>
     <!-- 匯出按鈕群 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
-      <button class="btn-ghost" onclick="previewExport()" style="font-size:13px">👁 產生預覽</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px" class="export-btns">
+      <button class="btn-ghost" onclick="previewExport()" style="font-size:13px">👁 預覽格式</button>
       <button class="btn-primary" id="btnExportWord" onclick="exportWord()" style="font-size:13px">⬇ 下載 Word (.doc)</button>
       <button class="btn-primary" id="btnExportPdf" onclick="exportPdf()" style="background:var(--blue);font-size:13px">🖨 列印 / 另存 PDF</button>
     </div>
     <div style="font-size:11px;color:var(--t2);margin-top:10px;line-height:1.7">
-      ⚡ Word 格式：原生的 Doc 格式寫入技術，下載後直接用 Word 開啟，不跑版且包含浮水印。<br>
+      ⚡ Word 格式：原生的 Doc 寫入技術，下載後直接用 Word 開啟，不跑版且包含浮水印。<br>
       🖨 PDF 格式：包含完整浮水印，開啟列印對話框後，選擇「另存為 PDF」。
     </div>
   </div>
 </div>
 
-<!-- 主程式介面 -->
-<div class="static-alert-bar" id="alertBar">
-  <div class="alert-box">
-    <div class="alert-icon">🎟</div>
-    <div class="alert-text"><strong>迪士尼排程：</strong>搶票總指揮統一購票，清晨出發，提早 1.5 小時排隊。</div>
+<div class="toast-container" id="toastWrap"></div>
+
+<!-- ══ APP ══ -->
+<!-- 頂部提醒橫幅 -->
+<div class="alert-bar" id="alertBar">
+  <div class="alert-items" id="alertItems">
+    <span class="alert-pill yellow">⚠ 登入後顯示即時提醒</span>
   </div>
-  <div class="alert-box">
-    <div class="alert-icon">🏠</div>
-    <div class="alert-text"><strong>宿舍公約：</strong>衛浴限時，23:00 後禁洗衣機吹風機，確實執行垃圾分類。</div>
-  </div>
-  <div class="alert-box">
-    <div class="alert-icon">🎬</div>
-    <div class="alert-text"><strong>拍攝規定：</strong>Reels 拍攝日全員統一著白 T 色系服裝。外出拍攝須回報。</div>
+  <div class="alert-bar-actions">
+    <button class="btn-ghost" style="font-size:12px;padding:6px 12px" onclick="copyStatus()" id="alertCopyBtn" style="display:none">📢 複製進度播報</button>
   </div>
 </div>
 
@@ -316,38 +452,41 @@ button { cursor: pointer; transition: all .2s; }
       <div class="sb-user" id="currentUserDisplay">尚未登入</div>
     </div>
     <div id="scopeBadge"></div>
-    <nav class="nav-menu" id="navMenu"></nav>
+    <button class="sb-quest-btn" id="questBtn" onclick="openQuest()" style="display:none">📝 每日覆盤打卡</button>
+    <nav class="nav-menu" id="navMenu">
+      <!-- 動態生成 -->
+    </nav>
   </aside>
 
-  <main class="main">
+  <div class="main">
     <header class="topbar">
-      <div class="page-title" id="pageTitle"><span id="pageTitleIcon" style="margin-right:8px">📊</span> <span id="pageTitleText">全景工作看板</span></div>
-      <div class="admin-hide" id="topAdminBtns" style="display: none;">
-        <button class="btn-ghost" style="margin-right: 8px;" onclick="copyStatus()">📢 複製進度播報</button>
-        <button class="btn-primary" onclick="openTaskModal()">＋ 部署新任務</button>
-      </div>
+      <div class="page-title" id="pageTitle">全景工作看板</div>
+      <div class="topbar-r" id="topbarR"></div>
     </header>
     <div class="content">
 
       <!-- 全景看板（Admin / Guest 看全部） -->
       <section id="sec-kanban" class="section active">
-        <div class="dash-prog-wrap silver-decor">
+        <div class="dash-prog-wrap">
           <div class="dp-header">
-            <div class="dp-title">🎯 專案總體推進進度</div>
+            <div class="dp-title">專案總體推進進度</div>
             <div class="dp-pct" id="dashPct">0%</div>
           </div>
           <div class="track-lg">
-            <div class="fill-lg" id="fill-done" style="background: var(--green);"></div>
-            <div class="fill-lg" id="fill-prog" style="background: var(--blue);"></div>
-            <div class="fill-lg" id="fill-stuck" style="background: var(--danger);"></div>
+            <div class="fill-lg" id="fill-done" style="background:var(--green)"></div>
+            <div class="fill-lg" id="fill-prog" style="background:var(--blue)"></div>
+            <div class="fill-lg" id="fill-stuck" style="background:var(--danger)"></div>
           </div>
-          <div class="milestone-tracker">
-            <div class="ms-item" id="ms-ch1"><div class="ms-title">第一章：提案與主題</div><div class="ms-status" id="ms-st-1">追蹤 W1/W2 進度...</div></div>
-            <div class="ms-item" id="ms-ch2"><div class="ms-title">第二章：視覺與宣傳</div><div class="ms-status" id="ms-st-2">追蹤 W3/W4 進度...</div></div>
-            <div class="ms-item" id="ms-ch3"><div class="ms-title">第三章：影音產出</div><div class="ms-status" id="ms-st-3">追蹤 W3/W4 進度...</div></div>
-            <div class="ms-item" id="ms-ch4"><div class="ms-title">第四章：總結報告</div><div class="ms-status" id="ms-st-4">追蹤 W7/W8 進度...</div></div>
+          <div style="display:flex;gap:14px;margin-top:13px;font-size:12px;color:var(--t2);font-weight:600;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:var(--green);border-radius:3px;display:inline-block"></span>已完成</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:var(--blue);border-radius:3px;display:inline-block"></span>進行中</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:var(--accent);border-radius:3px;display:inline-block"></span>覆核中</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:var(--danger);border-radius:3px;display:inline-block"></span>卡關中</span>
           </div>
         </div>
+
+        <!-- 提醒區塊（只有 admin 看全部，組員看自己組） -->
+        <div class="reminders-box" id="remindersBox"></div>
 
         <div class="filter-bar">
           <input class="filter-search" id="kbSearch" placeholder="🔍 搜尋任務或負責人…" oninput="renderViews()">
@@ -367,13 +506,13 @@ button { cursor: pointer; transition: all .2s; }
         <div class="list-view" id="viewList"></div>
       </section>
 
-      <!-- 我的工作區（組員專屬，已加回看板模式） -->
+      <!-- 我的工作區（組員專屬） -->
       <section id="sec-mywork" class="section">
-        <div class="silver-decor" style="margin-bottom:18px;padding:16px 20px;background:var(--bg-panel);border-radius:var(--r-lg);border:1px solid var(--line)">
+        <div style="margin-bottom:18px;padding:16px 20px;background:var(--bg-panel);border-radius:var(--r-lg);border:1px solid var(--line)">
           <div id="mywork-header" style="font-size:16px;font-weight:800;color:var(--t0);margin-bottom:5px"></div>
           <div id="mywork-sub" style="font-size:13px;color:var(--t2)">這裡僅顯示您負責的組別任務及全員任務。在下方可直接更改任務狀態。</div>
         </div>
-        <div class="dash-prog-wrap silver-decor" style="margin-bottom:18px">
+        <div class="dash-prog-wrap" style="margin-bottom:18px">
           <div class="dp-header" style="margin-bottom:12px">
             <div class="dp-title" style="font-size:14px" id="mywork-prog-label">我的任務進度</div>
             <div class="dp-pct" style="font-size:22px" id="mywork-pct">0%</div>
@@ -381,25 +520,29 @@ button { cursor: pointer; transition: all .2s; }
           <div class="track-lg"><div class="fill-lg" id="mywork-fill" style="background:var(--green)"></div></div>
         </div>
         <div class="filter-bar">
-          <input class="filter-search" id="mySearch" placeholder="🔍 搜尋我的任務…" oninput="renderMyWork()">
+          <input class="filter-search" id="mySearch" placeholder="🔍 搜尋任務…" oninput="renderMyWork()">
           <div class="view-toggles">
-            <button class="v-btn active" onclick="setMyView('board',this)">看板模式</button>
-            <button class="v-btn" onclick="setMyView('list',this)">列表模式</button>
+            <button class="v-btn active" onclick="setMyView('board',this)">看板</button>
+            <button class="v-btn" onclick="setMyView('list',this)">列表</button>
           </div>
         </div>
-        <div id="mywork-board" class="board-view" style="min-height:300px"></div>
-        <div id="mywork-list" class="list-view"></div>
+        <div id="mywork-board" class="board-view" style="min-height:200px"></div>
+        <div class="list-view" id="mywork-list"></div>
       </section>
 
-      <!-- 會議記錄 -->
+      <!-- 會議記錄 (開放全員編輯) -->
       <section id="sec-meetings" class="section">
         <div class="panel-wrap">
-          <div class="panel-box silver-decor admin-hide" id="meetingFormWrap" style="display:none;">
-            <h4 style="margin-bottom:16px;color:var(--t0);font-size:15px">✍ 新增會議與對帳</h4>
+          <div class="panel-box guest-hide" id="meetingFormWrap" style="display:none;">
+            <h4 style="margin-bottom:16px;color:var(--t0);font-size:15px" id="mtgFormTitle">✍ 新增會議與對帳</h4>
+            <input type="hidden" id="mtgId">
             <div class="input-group"><label>標題</label><input class="input-box" id="mtgTitle" placeholder="W2 企劃覆盤…"></div>
             <div class="input-group"><label>日期</label><input type="date" class="input-box" id="mtgDate"></div>
             <div class="input-group"><label>內容（決議 / 公費核銷）</label><textarea class="input-box" id="mtgText" rows="7" placeholder="記錄重要決議、公費明細…"></textarea></div>
-            <button class="btn-primary" style="width:100%" onclick="addMeeting()">儲存紀錄</button>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-ghost" id="btnCancelMtg" style="display:none; flex:1;" onclick="cancelEditMeeting()">取消</button>
+              <button class="btn-primary" id="btnSaveMtg" style="flex:2;" onclick="addMeeting()">儲存紀錄</button>
+            </div>
           </div>
           <div class="panel-box" style="flex:1;">
             <input class="input-box" id="mtgSearch" placeholder="🔍 搜尋會議關鍵字…" oninput="debounceSearchMtg()" style="margin-bottom:16px">
@@ -411,7 +554,7 @@ button { cursor: pointer; transition: all .2s; }
       <!-- 手札週記 -->
       <section id="sec-diaries" class="section">
         <div class="panel-wrap">
-          <div class="panel-box silver-decor guest-hide">
+          <div class="panel-box guest-hide">
             <h4 style="margin-bottom:16px;color:var(--t0);font-size:15px">✍ 申報本週實習手札</h4>
             <div class="input-group"><label>身分</label>
               <select class="input-box" id="dyAuthor"><option>Boni</option><option>儒銘</option><option>珀翊</option><option>庭葦</option><option>宜彥</option><option>俊安</option><option>郁馨</option></select>
@@ -419,11 +562,14 @@ button { cursor: pointer; transition: all .2s; }
             <div class="input-group"><label>對應週次</label>
               <select class="input-box" id="dyWeek"><option>W1</option><option>W2</option><option>W3</option><option>W4</option><option>W5</option><option>W6</option><option>W7</option><option>W8</option><option>W9</option></select>
             </div>
-            <div class="input-group"><label>實習工作項目 ＆ 內容摘要（建議300字）</label>
+            <div class="input-group"><label>實習工作項目 ＆ 內容摘要（300字以上）</label>
               <textarea class="input-box" id="dyText" rows="7" placeholder="本週完成事項、學習內容、遇到的問題與解決方式…"></textarea>
             </div>
             <div class="input-group"><label>雲端附件連結（GDrive / Notion）</label><input class="input-box" id="dyLink" placeholder="https://…"></div>
-            <button class="btn-primary" style="width:100%;" onclick="addDiary()">🔒 加密申報上傳</button>
+            <div style="display:flex;gap:8px">
+              <button class="btn-primary" style="flex:1" onclick="addDiary()">🔒 加密申報上傳</button>
+              <button class="btn-ghost" onclick="openExportModal()" title="匯出崑山週報格式">📄 匯出週報</button>
+            </div>
           </div>
           <div class="panel-box">
             <div class="tabs">
@@ -444,19 +590,48 @@ button { cursor: pointer; transition: all .2s; }
       <!-- 決策密室（高管專屬） -->
       <section id="sec-secret" class="section">
         <div class="secret-wrap">
-          <div class="panel-box silver-decor" style="border-color:rgba(244,63,94,.25)">
+          <div class="panel-box" style="border-color:rgba(244,63,94,.25)">
             <h4 style="color:var(--danger);margin-bottom:14px;font-size:15px">🔒 機密備忘錄</h4>
             <textarea class="input-box" id="scMemoIn" rows="4" style="margin-bottom:12px" placeholder="老師批閱反饋、敏感財務查帳…"></textarea>
             <button class="btn-primary" style="background:var(--danger);color:#fff;width:100%;margin-bottom:22px" onclick="addMemo()">封存備忘</button>
             <div id="scMemoList" style="display:flex;flex-direction:column;gap:10px;max-height:38vh;overflow-y:auto;padding-right:6px"></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:16px">
-            <div class="panel-box silver-decor" style="border-color:rgba(251,191,36,.25)">
+            <div class="panel-box" style="border-color:rgba(251,191,36,.25)">
               <div class="tabs">
-                <button class="tab-btn active" onclick="switchSecretTab('tab-dy',this)">📂 週記內文審核與匯出</button>
+                <button class="tab-btn active" onclick="switchSecretTab('tab-dy',this)">📂 週記內文審核</button>
+                <button class="tab-btn" onclick="switchSecretTab('tab-ck',this)">📊 打卡歷史總覽</button>
               </div>
               <div id="tab-dy" class="tab-content active" style="max-height:50vh;overflow-y:auto;padding-right:6px"></div>
+              <div id="tab-ck" class="tab-content" style="max-height:50vh;overflow-y:auto;padding-right:6px"></div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 目標追蹤（高管 + 組員可看自己範圍） -->
+      <section id="sec-goals" class="section">
+        <div class="panel-wrap">
+          <div class="panel-box" id="goalFormWrap">
+            <h4 style="color:var(--t0);margin-bottom:16px;font-size:15px">🎯 部署新目標</h4>
+            <button class="btn-primary" style="width:100%;padding:11px" onclick="openGoalModal()">＋ 新增實習目標 / 里程碑</button>
+            <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line)">
+              <div style="font-size:12px;color:var(--t2);font-weight:600;margin-bottom:10px">快速篩選</div>
+              <div style="display:flex;flex-direction:column;gap:6px" id="goalFilters">
+                <button class="chip active" data-gf="all" onclick="setGoalFilter(this)">全部目標</button>
+                <button class="chip qi-chip" data-gf="qi" onclick="setGoalFilter(this)">✍ 企劃組</button>
+                <button class="chip vi-chip" data-gf="vi" onclick="setGoalFilter(this)">🎨 視覺組</button>
+                <button class="chip cut-chip" data-gf="cut" onclick="setGoalFilter(this)">🎬 剪片組</button>
+                <button class="chip" data-gf="all-tag" onclick="setGoalFilter(this)">全員里程碑</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <h4 style="color:var(--t0);font-size:15px">實習成果目標追蹤</h4>
+              <div style="font-size:12px;color:var(--t2)">點擊目標卡片可查看 ＆ 編輯備註</div>
+            </div>
+            <div class="goals-grid" id="goalsWall" style="max-height:68vh;overflow-y:auto;padding-right:6px"></div>
           </div>
         </div>
       </section>
@@ -469,14 +644,14 @@ button { cursor: pointer; transition: all .2s; }
 // ══════════════════════════════════════════
 //  資料與常數
 // ══════════════════════════════════════════
-const SYS_KEY = 'INTERN_BASE_V30_STABLE_';
+const SYS_KEY = 'INTERN_BASE_V16_';
 const WEEKS = ['W1','W2','W3','W4','W5','W6','W7','W8','W9'];
 const WEEK_META = {
-  W1:{d:'07/02-07/03',t:'初期提案'},W2:{d:'07/06-07/10',t:'素材採集'},
-  W3:{d:'07/13-07/17',t:'7/17留守辦公'},W4:{d:'07/20-07/24',t:'核心初審'},
-  W5:{d:'07/27-07/31',t:'內容優化'},W6:{d:'08/03-08/07',t:'浴衣活動'},
-  W7:{d:'08/10-08/14',t:'成果整合'},W8:{d:'08/17-08/21',t:'模擬演練'},
-  W9:{d:'08/24-08/28',t:'榮譽表揚'}
+  W1:{d:'7/02–7/03',t:'環境導入'},W2:{d:'7/06–7/10',t:'素材製作'},
+  W3:{d:'7/13–7/17',t:'企劃發想'},W4:{d:'7/20–7/24',t:'製作期'},
+  W5:{d:'7/27–7/31',t:'優化期'},W6:{d:'8/03–8/07',t:'數位行銷'},
+  W7:{d:'8/10–8/14',t:'成果整合'},W8:{d:'8/17–8/21',t:'最終定案'},
+  W9:{d:'8/24–8/28',t:'成果發表'}
 };
 const COL_DEF=[
   {id:'todo',title:'未開始',color:'var(--t2)',bg:'transparent'},
@@ -491,59 +666,66 @@ const GROUP_NAME={qi:'✍ 企劃',vi:'🎨 視覺',cut:'🎬 剪片',all:'全員
 const MEMBERS=['Boni','儒銘','珀翊','庭葦','宜彥','俊安','郁馨'];
 const DIARY_TARGET=9;
 
+// 預設目標（實習最終產出）
+const DEFAULT_GOALS=[
+  {id:'g1',title:'招生 DM ／ 活動海報 3–5 份',group:'vi',owner:'宜彥',status:'pending',note:''},
+  {id:'g2',title:'社群貼文設計 2–3 份',group:'vi',owner:'宜彥',status:'pending',note:''},
+  {id:'g3',title:'短影音 ／ 形象影片 1–3 支（完整剪輯版）',group:'cut',owner:'俊安、郁馨',status:'pending',note:''},
+  {id:'g4',title:'品牌文宣企劃書 ＆ 文案腳本初稿',group:'qi',owner:'儒銘、珀翊、庭葦',status:'pending',note:''},
+  {id:'g5',title:'最終成果發表簡報（PPT/Keynote）',group:'all',owner:'全員',status:'pending',note:''},
+  {id:'g6',title:'【8/27】成果發表會 30 分鐘展示 ＆ 接受評審講評',group:'all',owner:'全員',status:'pending',note:''},
+  {id:'g7',title:'每位實習生 9 篇以上工作週報（崑山大學格式）',group:'all',owner:'全員',status:'pending',note:''},
+];
+
 function load(k,fb){
   try{const d=localStorage.getItem(SYS_KEY+k);if(!d)return fb;const p=JSON.parse(d);if(Array.isArray(p)&&p.length===0&&Array.isArray(fb)&&fb.length>0)return fb;return p;}catch(e){return fb;}
 }
-
 let tasks=load('tasks',[
-  {id:'t1',title:'W1 企劃組：腦力激盪並收斂實習主題方向，提交初步企劃構想',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W1',status:'done'},
-  {id:'t2',title:'W1 視覺組：研究日本企業設計案例，參與企業和服日測拍記錄',group:'vi',owner:'宜彥',week:'W1',status:'done'},
-  {id:'t3',title:'W1 剪片組：盤點與整理現有舊影片素材，評估企劃主題之可行性',group:'cut',owner:'俊安、郁馨',week:'W1',status:'done'},
-  {id:'t4',title:'W2 企劃組：收集、分析日本廣告文化與日系特色文案',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W2',status:'progress'},
-  {id:'t5',title:'W2 視覺組：負責校園與環境大範圍照片拍攝與素材累積',group:'vi',owner:'宜彥',week:'W2',status:'progress'},
-  {id:'t6',title:'W2 剪片組：將現有新舊素材分類與標籤歸檔，進行分鏡與節奏發想',group:'cut',owner:'俊安、郁馨',week:'W2',status:'todo'},
-  {id:'t7',title:'W3 企劃組：完成短影音與文宣的完整拍攝腳本初稿，提交進度報告',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W3',status:'todo'},
-  {id:'t8',title:'W3 視覺組：產出招生DM/海報/封面概念初稿，發想化妝品商品DM',group:'vi',owner:'宜彥',week:'W3',status:'todo'},
-  {id:'t9',title:'W3 剪片組：整合7/7七夕活動素材，進行第一階段影片粗剪',group:'cut',owner:'俊安、郁馨',week:'W3',status:'todo'},
-  {id:'t10',title:'W4 企劃組：微調平面文案、校正影片字幕與旁白稿，追蹤兩組進度',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W4',status:'todo'},
-  {id:'t11',title:'W4 視覺組：將初稿實作產出初次成品，進行化妝品商品拍攝與DM設計',group:'vi',owner:'宜彥',week:'W4',status:'stuck'},
-  {id:'t12',title:'W4 剪片組：全面進入核心剪輯、後期音效與動畫編輯，產出粗剪版',group:'cut',owner:'俊安、郁馨',week:'W4',status:'todo'},
-  {id:'t13',title:'W5 企劃組：收集主管與老師意見，調整社群內容切入點',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W5',status:'todo'},
-  {id:'t14',title:'W5 視覺組：依據反饋意見全面優化前期平面設計，擴充宣傳素材庫',group:'vi',owner:'宜彥',week:'W5',status:'todo'},
-  {id:'t15',title:'W5 剪片組：依據審片意見修正影片節奏、調色、字幕與音效',group:'cut',owner:'俊安、郁馨',week:'W5',status:'todo'},
-  {id:'t16',title:'W6 企劃組：撰寫作品方向調整紀錄，規劃和服/浴衣體驗宣傳文案',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W6',status:'todo'},
-  {id:'t17',title:'W6 視覺組：針對平面視覺調性進行最終微調，製作社群廣告素材',group:'vi',owner:'宜彥',week:'W6',status:'todo'},
-  {id:'t18',title:'W6 剪片組：優化短影音細節，全員參與浴衣體驗捕捉精華畫面',group:'cut',owner:'俊安、郁馨',week:'W6',status:'todo'},
-  {id:'t19',title:'W7 企劃組：主導成果發表簡報架構與製作，收集作品建立最終資料夾',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W7',status:'todo'},
-  {id:'t20',title:'W7 視覺組：平面設計作品最終編修與定案，交付DM/海報及社群貼文',group:'vi',owner:'宜彥',week:'W7',status:'todo'},
-  {id:'t21',title:'W7 剪片組：影片最終調色與封裝輸出，交付核心影片1~3支',group:'cut',owner:'俊安、郁馨',week:'W7',status:'todo'},
-  {id:'t22',title:'W8 企劃組：納入祭典紀錄意義最終定案簡報，主導發表模擬練習',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W8',status:'todo'},
-  {id:'t23',title:'W8 視覺組：配合祭典修正平面圖表，參與發表練習準備設計理念講述',group:'vi',owner:'宜彥',week:'W8',status:'todo'},
-  {id:'t24',title:'W8 剪片組：將祭典精華快速補剪入最終影片，參與發表練習',group:'cut',owner:'俊安、郁馨',week:'W8',status:'todo'},
-  {id:'t25',title:'W9 結業週：8/27 最終成果發表會 (30分鐘展示與講評) & 8/28 結業心得',group:'all',owner:'全員',week:'W9',status:'todo'}
+  {id:'t1',title:'W1 企劃組：腦力激盪收斂實習主題，產出第一週提案書',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W1',status:'done'},
+  {id:'t2',title:'W1 視覺組：研究日本企業設計案例，參與和服日側拍',group:'vi',owner:'宜彥',week:'W1',status:'done'},
+  {id:'t3',title:'W1 剪片組：盤點舊影片素材，評估企劃主題可行性',group:'cut',owner:'俊安、郁馨',week:'W1',status:'done'},
+  {id:'t4',title:'W2 企劃組：收集分析日本廣告文化與日系文案特色',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W2',status:'progress'},
+  {id:'t5',title:'W2 視覺組：校園環境大範圍照片拍攝，建立視覺風格規範',group:'vi',owner:'宜彥',week:'W2',status:'progress'},
+  {id:'t6',title:'W2 剪片組：素材分類標籤歸檔，進行分鏡節奏發想',group:'cut',owner:'俊安、郁馨',week:'W2',status:'todo'},
+  {id:'t7',title:'W3 企劃組：完成短影音與文宣完整腳本初稿',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W3',status:'todo'},
+  {id:'t8',title:'W3 視覺組：產出招生DM/活動海報/社群封面視覺概念初稿',group:'vi',owner:'宜彥',week:'W3',status:'todo'},
+  {id:'t9',title:'W3 剪片組：依腳本規劃B-roll清單，整合七夕活動素材進入粗剪',group:'cut',owner:'俊安、郁馨',week:'W3',status:'todo'},
+  {id:'t10',title:'W4 企劃組：平面文案微調，校正影片字幕旁白稿',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W4',status:'todo'},
+  {id:'t11',title:'W4 視覺組：平面文宣初次成品，化妝品商品拍攝與DM設計',group:'vi',owner:'宜彥',week:'W4',status:'stuck'},
+  {id:'t12',title:'W4 剪片組：核心剪輯、後期音效與動畫編輯，產出粗剪成品',group:'cut',owner:'俊安、郁馨',week:'W4',status:'todo'},
+  {id:'t13',title:'W5 企劃組：收集初審反饋，撰寫優化會議紀錄',group:'qi',owner:'儒銘、珀翊、庭葦',week:'W5',status:'todo'},
+  {id:'t14',title:'W5 視覺組：依修正意見調整平面設計，更新素材庫',group:'vi',owner:'宜彥',week:'W5',status:'todo'},
+  {id:'t15',title:'W5 剪片組：修正影片節奏、色調、音效與字幕',group:'cut',owner:'俊安、郁馨',week:'W5',status:'todo'},
+  {id:'t16',title:'W7 【大總結里程碑】影片1~3支、DM3~5份、社群貼文2~3份 最終封裝完成',group:'all',owner:'全員',week:'W7',status:'todo'},
 ]);
 let meetings=load('meets',[{id:'m1',title:'W1 環境對齊覆盤會',date:'2026-07-03',text:'決議收斂實習主題。公費預繳 ¥5,000 完畢。'}]);
 let diaries=load('diaries',[{id:'d1',author:'系統',week:'W1',date:'2026-07-01',text:'控制基地建立完畢。手札週記系統啟動，可直接匯出崑山大學週報格式。',link:''}]);
-let memos=load('memos',[{id:'sm1',text:'決策密室啟用成功。'}]);
+let checkins=load('checkins',[]);
+let memos=load('memos',[{id:'sm1',text:'決策密室啟用。'}]);
+let goals=load('goals',DEFAULT_GOALS);
 
 function saveAll(){
   localStorage.setItem(SYS_KEY+'tasks',JSON.stringify(tasks));
   localStorage.setItem(SYS_KEY+'meets',JSON.stringify(meetings));
   localStorage.setItem(SYS_KEY+'diaries',JSON.stringify(diaries));
+  localStorage.setItem(SYS_KEY+'checkins',JSON.stringify(checkins));
   localStorage.setItem(SYS_KEY+'memos',JSON.stringify(memos));
+  localStorage.setItem(SYS_KEY+'goals',JSON.stringify(goals));
 }
 
 // ══════════════════════════════════════════
 //  狀態與登入
 // ══════════════════════════════════════════
 let currentUser='',isGuest=false,isAdmin=false,currentFilter='all',currentView='board';
+let myViewMode='board',goalFilter='all';
 let dragId=null,pendingDel=null,delTimer=null;
+let qWeek='W1',editingGoalId=null;
 
 function getMyGroup(){
   if(['儒銘','珀翊','庭葦'].includes(currentUser))return'qi';
   if(currentUser==='宜彥')return'vi';
   if(['俊安','郁馨'].includes(currentUser))return'cut';
-  return'all';
+  return'admin';
 }
 
 let tempSelected='';
@@ -554,15 +736,21 @@ function selectChar(name,el){
 }
 function enterSystem(){
   if(!tempSelected){showToast('請先選擇身分','err');return;}
-  if(tempSelected==='Boni'){document.getElementById('pwMask').classList.add('active');document.getElementById('pwInput').focus();}
+  if(tempSelected==='Boni' || tempSelected==='指導老師'){
+    document.getElementById('pwMaskTitle').textContent = `請輸入 ${tempSelected} 專屬安全密碼`;
+    document.getElementById('pwMask').classList.add('active');
+    document.getElementById('pwInput').focus();
+  }
   else completeLogin(tempSelected,false);
 }
-function closePwMask(){document.getElementById('pwMask').classList.remove('active');}
+function closePwMask(){document.getElementById('pwMask').classList.remove('active'); document.getElementById('pwInput').value='';}
 function verifyPw(){
-  if(document.getElementById('pwInput').value==='1128'){closePwMask();completeLogin('Boni',false);}
+  const pw = document.getElementById('pwInput').value;
+  if(tempSelected==='Boni' && pw==='1128'){closePwMask();completeLogin('Boni',false);}
+  else if(tempSelected==='指導老師' && pw==='0701'){closePwMask();completeLogin('指導老師',false);}
   else{showToast('驗證碼錯誤','err');document.getElementById('pwInput').value='';}
 }
-function enterGuestMode(){completeLogin('訪客',true);}
+function enterGuest(){completeLogin('訪客',true);}
 
 function completeLogin(name,guestFlag){
   currentUser=name;isGuest=guestFlag;
@@ -581,30 +769,31 @@ function completeLogin(name,guestFlag){
   }
 
   buildNav(); buildScopeBadge(); renderAlertBar();
+  renderViews(); renderMeetings(); renderDiaries(); renderGoals(); renderSecret();
   
+  if(!isGuest) {
+    document.getElementById('questBtn').style.display='block';
+    checkPulse();
+  }
+
   if(!isGuest&&!isAdmin){
     const myworkBtn=Array.from(document.querySelectorAll('.nav-item')).find(b=>b.textContent.includes('我的工作區'));
     if(myworkBtn){navTo('sec-mywork',myworkBtn);renderMyWork();}
-  } else {
-    renderViews();
   }
-  
-  renderMeetings(); renderDiaries(); 
-  if(isAdmin) renderSecret();
 }
 
 function buildNav(){
   const nav=document.getElementById('navMenu'); nav.innerHTML='';
   const topbar=document.getElementById('topbarR'); topbar.innerHTML='';
-  const common=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'},{id:'sec-diaries',icon:'📓',label:'手札週記申報'}];
+  const common=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'},{id:'sec-diaries',icon:'📓',label:'手札週記申報'},{id:'sec-goals',icon:'🎯',label:'目標追蹤'}];
   
   const myGroup=getMyGroup();
-  if(!isGuest&&!isAdmin&&myGroup!=='all') common.splice(1,0,{id:'sec-mywork',icon:'🗂',label:'我的工作區'});
+  if(!isGuest&&!isAdmin&&myGroup!=='admin') common.splice(1,0,{id:'sec-mywork',icon:'🗂',label:'我的工作區'});
   
   let sections=[...common];
-  if(isGuest){ sections=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'}]; } 
+  if(isGuest){ sections=[{id:'sec-kanban',icon:'📊',label:'全景工作看板'},{id:'sec-goals',icon:'🎯',label:'目標追蹤'}]; } 
   else if(isAdmin){ sections=[...common,{id:'sec-meetings',icon:'🗓',label:'會議與對帳'},{id:'sec-secret',icon:'🔒',label:'決策密室'}]; } 
-  else { sections=[...common,{id:'sec-meetings',icon:'🗓',label:'會議紀錄'}]; }
+  else { sections=[...common,{id:'sec-meetings',icon:'🗓',label:'會議與對帳'}]; }
 
   let first=true;
   sections.forEach(s=>{
@@ -616,6 +805,7 @@ function buildNav(){
       if(s.id==='sec-mywork')renderMyWork();
       if(s.id==='sec-kanban')renderViews();
       if(s.id==='sec-meetings')renderMeetings();
+      if(s.id==='sec-goals')renderGoals();
       if(s.id==='sec-secret')renderSecret();
     };
     nav.appendChild(btn); first=false;
@@ -642,7 +832,20 @@ function buildScopeBadge(){
 }
 
 function renderAlertBar(){
-  if(isGuest){return;}
+  if(isGuest){document.getElementById('alertItems').innerHTML=`<span class="alert-pill yellow">👁 訪客預覽模式 · 所有資料唯讀</span>`;return;}
+  const stuck=tasks.filter(t=>t.status==='stuck');
+  const myGroup=getMyGroup();
+  const items=[];
+  if(stuck.length){
+    const myStuck=isAdmin?stuck:stuck.filter(t=>t.group===myGroup||t.group==='all');
+    if(myStuck.length) items.push(`<span class="alert-pill red">⚠ ${myStuck.length} 項任務卡關需處理</span>`);
+  }
+  const rules = [
+    {color:'blue',text:'W1 提案收斂'}, {color:'yellow',text:'W4 核心初審'}, {color:'green',text:'8/27 成果發表會'}
+  ];
+  rules.forEach(r=>{ items.push(`<span class="alert-pill ${r.color}">${r.text}</span>`); });
+  document.getElementById('alertItems').innerHTML=items.join('')||`<span class="alert-pill green">✓ 任務正常推進中</span>`;
+  document.getElementById('alertCopyBtn').style.display='inline-block';
 }
 
 function navTo(secId,btn){
@@ -688,31 +891,10 @@ function renderViews(){
     document.getElementById('fill-stuck').style.width=(tot?Math.round(s.stuck/tot*100):0)+'%';
   }
   
-  if(currentView==='board') renderBoard(ft); else renderList(ft);
-  updateMilestones();
+  if(currentView==='board')renderBoard(ft);else renderList(ft);
 }
 
 function canEdit(){return !isGuest && isAdmin;}
-
-function updateMilestones() {
-  const checkCh = (taskIds) => tasks.filter(t => taskIds.includes(t.id)).every(t => t.status === 'done');
-  
-  const ch1 = checkCh(['t1', 't4']);
-  document.getElementById('ms-ch1').className = 'ms-item ' + (ch1?'done':'');
-  document.getElementById('ms-st-1').textContent = ch1 ? '✓ 已達標' : '追蹤 W1/W2 進度...';
-
-  const ch2 = checkCh(['t8','t11','t20']);
-  document.getElementById('ms-ch2').className = 'ms-item ' + (ch2?'done':'');
-  document.getElementById('ms-st-2').textContent = ch2 ? '✓ 已達標' : '追蹤 W3/W4 進度...';
-
-  const ch3 = checkCh(['t9','t12','t21']);
-  document.getElementById('ms-ch3').className = 'ms-item ' + (ch3?'done':'');
-  document.getElementById('ms-st-3').textContent = ch3 ? '✓ 已達標' : '追蹤 W3/W4 進度...';
-
-  const ch4 = checkCh(['t19','t22','t25']);
-  document.getElementById('ms-ch4').className = 'ms-item ' + (ch4?'done':'');
-  document.getElementById('ms-st-4').textContent = ch4 ? '✓ 報告可產出' : '追蹤 W7/W8 進度...';
-}
 
 function renderBoard(ft){
   COL_DEF.forEach(col=>{
@@ -772,23 +954,18 @@ function allowDrop(e){e.preventDefault();e.currentTarget.classList.add('drag-ove
 document.addEventListener('dragleave',e=>{if(e.target.classList?.contains('col'))e.target.classList.remove('drag-over');});
 function handleDrop(e,st){
   e.preventDefault(); document.querySelectorAll('.col').forEach(c=>c.classList.remove('drag-over'));
-  if(!canEdit() && isAdmin)return;
   const t=tasks.find(x=>x.id===dragId);
-  if(t){
-    // 如果是組員在自己的看板拖曳
-    if(!isAdmin && t.group !== getMyGroup() && t.group !== 'all') {
-      showToast('只能移動自己組的任務', 'err'); dragId=null; return;
-    }
-    t.status=st;saveAll();
-    renderViews();
-    if(document.getElementById('sec-mywork').classList.contains('active')) renderMyWork();
-    showToast('✅ 已移至 '+COL_DEF.find(c=>c.id===st)?.title, 'ok');
-  }
+  if(!t)return;
+  if(!isAdmin && t.group !== getMyGroup() && t.group !== 'all'){showToast('只能移動自己組的任務','err');dragId=null;return;}
+  t.status=st;saveAll();
+  renderViews();
+  if(document.getElementById('sec-mywork')?.classList.contains('active')) renderMyWork();
+  showToast('✅ 已移至 '+COL_DEF.find(c=>c.id===st)?.title);
   dragId=null;
 }
 
 // ══════════════════════════════════════════
-//  我的工作區（組員專屬看板/清單）
+//  我的工作區 (組員專用)
 // ══════════════════════════════════════════
 function setMyView(v,btn){
   myViewMode=v;
@@ -824,10 +1001,10 @@ function renderMyWork(){
         <div class="col-title"><span style="color:${col.color}">${col.title}</span><span class="col-count">${ct.length}</span></div>
       </div><div class="col-cards">${ct.map(t=>{
         const done=t.status==='done';
-        const canDrag = t.group===myGroup || t.group==='all';
+        const canDrag = true;
         return `<div class="card" draggable="${canDrag}"
           ${canDrag?`ondragstart="dragId='${t.id}';this.classList.add('dragging')" ondragend="this.classList.remove('dragging')"` :''}
-          onclick="openTaskModal('${t.id}')" style="cursor:${canDrag?'grab':'pointer'}">
+          onclick="openTaskModal('${t.id}')" style="cursor:grab;">
           <div class="card-indicator" style="background:${col.color}"></div>
           <div class="c-title" style="${done?'text-decoration:line-through;color:var(--t2)':''}">${t.title}</div>
           <div class="c-footer"><span>${t.week}</span><span style="font-size:11px;color:${col.color}">${col.title}</span></div>
@@ -868,7 +1045,9 @@ function openTaskModal(id=null){
     document.getElementById('tkWeek').value=t.week;
     document.getElementById('tkOwner').value=t.owner;
     document.getElementById('tkStatus').value=t.status;
-    ['tkTitle','tkGroup','tkWeek','tkOwner'].forEach(f=>{ document.getElementById(f).disabled=!isAdmin; });
+    ['tkTitle','tkGroup','tkWeek','tkOwner'].forEach(f=>{
+      document.getElementById(f).disabled=!isAdmin;
+    });
   } else {
     if(!isAdmin){showToast('組員無法新增任務，請聯繫 Boni 或指導老師','err');return;}
     document.getElementById('tkId').value='';
@@ -886,11 +1065,123 @@ function saveTask(){
   const nd={title,group:document.getElementById('tkGroup').value,week:document.getElementById('tkWeek').value,owner:document.getElementById('tkOwner').value||'未指定',status:document.getElementById('tkStatus').value};
   if(id){const i=tasks.findIndex(x=>x.id===id);if(i>-1)tasks[i]={...tasks[i],...nd};}
   else tasks.push({id:'t_'+Date.now(),...nd});
-  saveAll();renderViews();if(!isAdmin)renderMyWork();closeTaskModal();showToast('✅ 任務已儲存', 'ok');
+  saveAll();renderViews();if(document.getElementById('sec-mywork')?.classList.contains('active')) renderMyWork(); closeTaskModal();showToast('✅ 任務已儲存');
 }
 
 // ══════════════════════════════════════════
-//  會議
+//  打卡牆
+// ══════════════════════════════════════════
+function checkPulse(){
+  if(isGuest)return;
+  const today=new Date().toISOString().split('T')[0];
+  const checked=checkins.some(c=>c.author===currentUser&&c.date===today);
+  const btn=document.getElementById('questBtn');
+  if(btn){btn.classList.toggle('checked',checked);btn.textContent=checked?'✅ 今日已打卡':'📝 每日覆盤打卡';}
+}
+function openQuest(){
+  document.getElementById('questModal').classList.add('show');
+  document.getElementById('questUserBadge').textContent=currentUser;
+  document.getElementById('questAdminWrap').style.display=isAdmin?'block':'none';
+  const myGroup=getMyGroup();
+  qWeek='W1';
+  for(const w of WEEKS){
+    const gr=isAdmin?tasks:tasks.filter(t=>t.group===myGroup||t.group==='all');
+    if(gr.some(t=>t.week===w&&t.status!=='done')){qWeek=w;break;}
+  }
+  renderQuestTabs();renderQuestBody();
+  if(isAdmin)renderQuestAdminSummary();
+}
+function closeQuest(){document.getElementById('questModal').classList.remove('show');}
+
+function renderQuestTabs(){
+  const c=document.getElementById('weekTabs');c.innerHTML='';
+  const myGroup=getMyGroup();
+  WEEKS.forEach(w=>{
+    const wt=isAdmin?tasks.filter(t=>t.week===w):tasks.filter(t=>t.week===w&&(t.group===myGroup||t.group==='all'));
+    const done=wt.filter(t=>t.status==='done').length;
+    const stuck=wt.some(t=>t.status==='stuck');
+    const prog=wt.some(t=>t.status==='progress');
+    const dotClass=stuck?'stuck':prog?'progress':done===wt.length&&wt.length>0?'done':'';
+    c.innerHTML+=`<button class="w-tab${w===qWeek?' active':''}" onclick="qWeek='${w}';renderQuestTabs();renderQuestBody()">
+      ${w}
+      <div class="week-dot-row"><div class="w-dot ${dotClass}"></div></div>
+    </button>`;
+  });
+}
+
+function renderQuestBody(){
+  const list=document.getElementById('questTaskList');list.innerHTML='';
+  const myGroup=getMyGroup();
+  const wt=isAdmin
+    ?tasks.filter(t=>t.week===qWeek)
+    :tasks.filter(t=>t.week===qWeek&&(t.group===myGroup||t.group==='all'));
+
+  if(!wt.length){list.innerHTML=`<div style="color:var(--t2);font-size:13px;padding:10px">本週尚無指派任務。</div>`;}
+  wt.forEach(t=>{
+    const done=t.status==='done';
+    const gc=GROUP_COLOR[t.group]||'var(--all)';
+    const gn=GROUP_NAME[t.group]||'全員';
+    list.innerHTML+=`<div class="check-item${done?' done':''}">
+      <div class="c-box" onclick="toggleTask('${t.id}')"></div>
+      <div style="flex:1"><div class="c-text">${t.title}</div></div>
+      <span class="c-tag-sm" style="color:${gc};border:1px solid ${gc};background:${GROUP_BG[t.group]||'transparent'};border-radius:4px;padding:2px 7px;font-size:10px">${gn}</span>
+    </div>`;
+  });
+
+  const h=document.getElementById('questHistoryList');h.innerHTML='';
+  const wc=checkins.filter(c=>c.week===qWeek);
+  if(!wc.length)h.innerHTML=`<div style="color:var(--t2);font-size:12px">尚無覆盤紀錄。</div>`;
+  wc.forEach(c=>{
+    h.innerHTML+=`<div class="history-log">
+      <strong style="color:var(--accent)">${c.date} · ${c.author}</strong>
+      <div style="color:var(--t1);margin-top:4px;font-size:13px">${c.note}</div>
+    </div>`;
+  });
+
+  const today=new Date().toISOString().split('T')[0];
+  const checked=checkins.some(c=>c.author===currentUser&&c.week===qWeek&&c.date===today);
+  const btn=document.getElementById('btnSubmitQuest');
+  btn.disabled=checked;
+  btn.textContent=checked?'✓ 今日已完成打卡':'🔥 確認打卡 · 寫入系統日誌';
+  btn.style.opacity=checked?.55:1;
+}
+
+function renderQuestAdminSummary(){
+  const wall=document.getElementById('questAdminList');wall.innerHTML='';
+  MEMBERS.forEach(name=>{
+    const logs=checkins.filter(c=>c.author===name).slice(0,3);
+    const cnt=checkins.filter(c=>c.author===name).length;
+    wall.innerHTML+=`<div style="margin-bottom:12px;padding:10px;background:var(--bg);border-radius:var(--r);border:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <span style="font-size:13px;font-weight:700;color:var(--t0)">👤 ${name}</span>
+        <span style="font-size:11px;color:var(--accent);font-weight:700">${cnt} 次打卡</span>
+      </div>
+      ${logs.length?logs.map(l=>`<div style="font-size:12px;color:var(--t2);padding:5px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--blue)">${l.date} ${l.week}</span> · ${l.note.substring(0,40)}…</div>`).join(''):'<div style="font-size:12px;color:var(--t2)">尚無打卡紀錄</div>'}
+    </div>`;
+  });
+}
+
+function toggleTask(id){
+  if(isGuest)return;
+  const myGroup=getMyGroup();
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  if(!isAdmin&&t.group!==myGroup&&t.group!=='all'){showToast('只能更新自己組的任務狀態','err');return;}
+  t.status=t.status==='done'?'todo':'done';
+  saveAll();renderViews();if(document.getElementById('sec-mywork')?.classList.contains('active')) renderMyWork();
+  renderQuestTabs();renderQuestBody();
+}
+
+function submitCheckin(){
+  const note=document.getElementById('questNote').value.trim();
+  checkins.unshift({id:'ci_'+Date.now(),author:currentUser,week:qWeek,date:new Date().toISOString().split('T')[0],note:note||'無備註'});
+  document.getElementById('questNote').value='';
+  saveAll();renderQuestBody();renderQuestTabs();renderSecret();checkPulse();
+  if(isAdmin)renderQuestAdminSummary();
+  showToast('✅ 覆盤日誌已寫入！');
+}
+
+// ══════════════════════════════════════════
+//  會議 (含編輯功能)
 // ══════════════════════════════════════════
 let mtgTimer = null;
 function debounceSearchMtg() { clearTimeout(mtgTimer); mtgTimer = setTimeout(renderMeetings, 300); }
@@ -910,18 +1201,63 @@ function renderMeetings() {
           <span style="font-size:12px; color:var(--t2);">${m.date}</span>
         </div>
         <div style="white-space:pre-wrap; color:var(--t1); font-size:13px; line-height:1.6;">${hl(m.text)}</div>
-        ${isAdmin ? `<div style="text-align:right; margin-top:11px;"><button class="btn-danger" onclick="triggerDelete('${m.id}','${m.title.substring(0,8).replace(/'/g,'')}')">刪除</button></div>` : ''}
+        ${!isGuest ? `
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:11px;">
+          <button class="btn-ghost" style="padding:4px 8px; font-size:12px;" onclick="editMeeting('${m.id}')">✎ 編輯</button>
+          <button class="btn-danger" style="padding:4px 8px; font-size:12px;" onclick="triggerDelete('${m.id}','${m.title.substring(0,8).replace(/'/g,'')}')">刪除</button>
+        </div>` : ''}
       </div>
     `;
   });
 }
+
 function addMeeting() {
   const title = document.getElementById('mtgTitle').value.trim();
   const text = document.getElementById('mtgText').value.trim();
+  const date = document.getElementById('mtgDate').value;
+  const id = document.getElementById('mtgId').value;
+
   if(!title || !text) { showToast('標題與內容必填', 'err'); return; }
-  meetings.unshift({id:'m_'+Date.now(), title, date:document.getElementById('mtgDate').value, text});
-  document.getElementById('mtgTitle').value = ''; document.getElementById('mtgText').value = '';
-  saveAll(); renderMeetings(); showToast('✅ 紀錄已儲存', 'ok');
+  
+  if(id) {
+    const idx = meetings.findIndex(x => x.id === id);
+    if(idx > -1) {
+      meetings[idx].title = title;
+      meetings[idx].text = text;
+      meetings[idx].date = date;
+    }
+  } else {
+    meetings.unshift({id:'m_'+Date.now(), title, date, text});
+  }
+  
+  cancelEditMeeting();
+  saveAll(); renderMeetings(); showToast(id ? '✅ 紀錄已更新' : '✅ 紀錄已儲存', 'ok');
+}
+
+function editMeeting(id) {
+  const m = meetings.find(x => x.id === id);
+  if(!m) return;
+  document.getElementById('mtgId').value = m.id;
+  document.getElementById('mtgTitle').value = m.title;
+  document.getElementById('mtgDate').value = m.date;
+  document.getElementById('mtgText').value = m.text;
+  
+  document.getElementById('mtgFormTitle').innerHTML = '✎ 編輯會議與對帳';
+  document.getElementById('btnSaveMtg').textContent = '更新紀錄';
+  document.getElementById('btnCancelMtg').style.display = 'block';
+  
+  document.getElementById('meetingFormWrap').scrollIntoView({behavior: 'smooth'});
+}
+
+function cancelEditMeeting() {
+  document.getElementById('mtgId').value = '';
+  document.getElementById('mtgTitle').value = '';
+  document.getElementById('mtgText').value = '';
+  document.getElementById('mtgDate').valueAsDate = new Date();
+  
+  document.getElementById('mtgFormTitle').innerHTML = '✍ 新增會議與對帳';
+  document.getElementById('btnSaveMtg').textContent = '儲存紀錄';
+  document.getElementById('btnCancelMtg').style.display = 'none';
 }
 
 // ══════════════════════════════════════════
@@ -972,24 +1308,92 @@ function addDiary(){
   if(!text){showToast('內文不能為空','err');return;}
   diaries.unshift({id:'d_'+Date.now(),author:document.getElementById('dyAuthor').value,week:document.getElementById('dyWeek').value,date:new Date().toISOString().split('T')[0],text,link:document.getElementById('dyLink').value});
   document.getElementById('dyText').value='';document.getElementById('dyLink').value='';
-  saveAll();renderDiaries();renderMyDiaries();renderSecret();showToast('🔒 手札申報成功', 'ok');
+  saveAll();renderDiaries();renderMyDiaries();renderSecret();showToast('🔒 手札申報成功');
 }
 
 // ══════════════════════════════════════════
-//  週報匯出 (HTML-to-DOC 原生技術, 不依賴 docx 套件)
+//  目標追蹤
 // ══════════════════════════════════════════
-const WEEK_DATES={
-  W1:'7月2日～7月3日',W2:'7月6日～7月10日',W3:'7月13日～7月17日',
-  W4:'7月20日～7月24日',W5:'7月27日～7月31日',W6:'8月3日～8月7日',
-  W7:'8月10日～8月14日',W8:'8月17日～8月21日',W9:'8月24日～8月28日'
-};
+let currentGoalFilter='all';
+function setGoalFilter(btn){
+  currentGoalFilter=btn.dataset.gf;
+  document.querySelectorAll('#goalFilters .chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');
+  renderGoals();
+}
 
+function openGoalModal(id=null){
+  editingGoalId=id;
+  if(id){
+    const g=goals.find(x=>x.id===id);if(!g)return;
+    document.getElementById('gkTitle').value=g.title;
+    document.getElementById('gkGroup').value=g.group;
+    document.getElementById('gkStatus').value=g.status;
+    document.getElementById('gkOwner').value=g.owner;
+    document.getElementById('gkNote').value=g.note;
+    document.getElementById('goalModalTitle').textContent='編輯目標';
+  } else {
+    ['gkTitle','gkOwner','gkNote'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('gkStatus').value='pending';
+    document.getElementById('goalModalTitle').textContent='新增目標';
+  }
+  document.getElementById('goalModal').classList.add('show');
+}
+function closeGoalModal(){document.getElementById('goalModal').classList.remove('show');editingGoalId=null;}
+function saveGoal(){
+  const title=document.getElementById('gkTitle').value.trim();if(!title){showToast('請填寫目標名稱','err');return;}
+  const nd={title,group:document.getElementById('gkGroup').value,status:document.getElementById('gkStatus').value,owner:document.getElementById('gkOwner').value||'未指定',note:document.getElementById('gkNote').value};
+  if(editingGoalId){const i=goals.findIndex(x=>x.id===editingGoalId);if(i>-1)goals[i]={...goals[i],...nd};}
+  else goals.push({id:'g_'+Date.now(),...nd});
+  saveAll();renderGoals();closeGoalModal();showToast('目標已儲存');
+}
+
+const GOAL_ST={pending:{label:'未開始',cls:'gs-pending'},prog:{label:'進行中',cls:'gs-prog'},ok:{label:'已達成',cls:'gs-ok'},risk:{label:'有風險',cls:'gs-risk'}};
+
+function renderGoals(){
+  const wall=document.getElementById('goalsWall');if(!wall)return;wall.innerHTML='';
+  const myGroup=getMyGroup();
+  let ft=goals;
+  if(!isAdmin&&!isGuest){
+    ft=goals.filter(g=>g.group===myGroup||g.group==='all');
+  }
+  if(currentGoalFilter!=='all'){
+    ft=ft.filter(g=>currentGoalFilter==='all-tag'?g.group==='all':g.group===currentGoalFilter);
+  }
+  if(!ft.length){wall.innerHTML=`<div style="color:var(--t2);text-align:center;padding:30px">尚無目標記錄</div>`;return;}
+  ft.forEach(g=>{
+    const st=GOAL_ST[g.status]||GOAL_ST.pending;
+    const canAct=isAdmin;
+    wall.innerHTML+=`<div class="goal-card ${g.group}" id="gc-${g.id}" onclick="toggleGoalExpand('${g.id}')">
+      <div class="goal-head">
+        <div class="goal-title">${g.title}</div>
+        <span class="goal-status ${st.cls}">${st.label}</span>
+      </div>
+      <div class="goal-owner">👤 ${g.owner} · <span style="color:${GROUP_COLOR[g.group]||'var(--all)'};font-weight:700">${GROUP_NAME[g.group]||'全員'}</span></div>
+      <div class="goal-note">${g.note||'（尚無備註）'}</div>
+      ${canAct?`<div class="goal-actions">
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="event.stopPropagation();quickUpdateGoalStatus('${g.id}')">快速更新狀態</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="event.stopPropagation();openGoalModal('${g.id}')">✎ 編輯</button>
+        <button class="btn-danger" onclick="event.stopPropagation();triggerDelete('${g.id}','目標')">刪除</button>
+      </div>`:''}
+    </div>`;
+  });
+}
+function toggleGoalExpand(id){document.getElementById('gc-'+id)?.classList.toggle('expanded');}
+function quickUpdateGoalStatus(id){
+  const g=goals.find(x=>x.id===id);if(!g)return;
+  const cycle={pending:'prog',prog:'ok',ok:'risk',risk:'pending'};
+  g.status=cycle[g.status]||'pending';
+  saveAll();renderGoals();showToast(`目標狀態 → ${GOAL_ST[g.status]?.label}`);
+}
+
+// ══════════════════════════════════════════
+//  週報匯出 (HTML-to-DOC 原生技術, 完美格式)
+// ══════════════════════════════════════════
 function getExportData(){
   const author=document.getElementById('expAuthor').value;
   const week=document.getElementById('expWeek').value;
   const d=diaries.find(x=>x.author===author&&x.week===week);
   
-  // 智慧撈取當週該組員且 status 為 done 的任務
   const userTasks = tasks.filter(t => t.owner.includes(author) && t.week === week && t.status === 'done');
   const taskStr = userTasks.length > 0 ? userTasks.map(t => '・' + t.title).join('\n') : '・（本週尚未完成看板任務或無紀錄）';
   
@@ -997,7 +1401,7 @@ function getExportData(){
   const text=d?d.text:'（本週尚未申報手札，請先至「手札週記申報」填寫內容後再匯出）';
   const link=d&&d.link?d.link:'無';
   const weekNum=week.replace('W','第')+'週';
-  const dateRange=WEEK_DATES[week]||'';
+  const dateRange=WEEK_META[week]?.d||'';
   
   return {author,week,weekNum,dateRange,text,fillDate,taskStr,link};
 }
@@ -1063,7 +1467,6 @@ function openExportSingle(id){
   setTimeout(previewExport,120);
 }
 
-// 核心 HTML-to-DOC 匯出技術
 function exportWord() {
   const {author,weekNum,dateRange,text,fillDate,taskStr,link} = getExportData();
   
@@ -1146,7 +1549,7 @@ function exportPdf(){
   <style>
     @page{size:A4;margin:2.5cm 2.5cm}
     body{font-family:"標楷體","新細明體",serif;font-size:12pt;line-height:1.6;color:#000; position:relative; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
-    .watermark{position:fixed; top:45%; left:50%; transform:translate(-50%, -50%) rotate(-35deg); font-size:75px; color:rgba(200,200,200,0.3); font-weight:900; z-index:-1; pointer-events:none; white-space:nowrap;}
+    .watermark{position:fixed; top:45%; left:50%; transform:translate(-50%, -50%) rotate(-35deg); font-size:75px; color:rgba(200,200,200,0.3); font-family:Arial,sans-serif; font-weight:900; z-index:-1; pointer-events:none; white-space:nowrap;}
     .center{text-align:center} .bold{font-weight:bold}
     table{width:100%;border-collapse:collapse;margin:15px 0}
     td{border:1px solid #444;padding:15px;vertical-align:top}
@@ -1246,9 +1649,9 @@ function cancelDelete(){clearInterval(delTimer);pendingDel=null;document.getElem
 function execDelete(id){
   tasks=tasks.filter(x=>x.id!==id);meetings=meetings.filter(x=>x.id!==id);
   diaries=diaries.filter(x=>x.id!==id);memos=memos.filter(x=>x.id!==id);
-  checkins=checkins.filter(x=>x.id!==id);
+  checkins=checkins.filter(x=>x.id!==id);goals=goals.filter(x=>x.id!==id);
   saveAll();renderViews();if(document.getElementById('sec-mywork').classList.contains('active')) renderMyWork();
-  renderMeetings();renderDiaries();renderMyDiaries();renderSecret();
+  renderMeetings();renderDiaries();renderMyDiaries();renderSecret();renderGoals();
   showToast('🗑 已銷毀');
 }
 
@@ -1264,6 +1667,7 @@ function copyStatus(){
   navigator.clipboard.writeText(txt).then(()=>showToast('📢 進度播報已複製', 'ok'));
 }
 
+let toastTimer=null;
 function showToast(msg,type=''){
   const wrap=document.getElementById('toastWrap');
   const el=document.createElement('div');
@@ -1279,5 +1683,55 @@ function showToast(msg,type=''){
 document.getElementById('mtgDate').valueAsDate=new Date();
 saveAll();
 </script>
+
+<style>
+/* ── 📱 RWD 手機版共榮 ── */
+@media (max-width: 768px) {
+  .app { flex-direction: column; height: auto; overflow: visible; }
+  body { overflow-y: auto; height: auto; }
+  .sidebar { width: 100%; height: auto; z-index: 100; border-right: none; border-bottom: 1px solid var(--line); position: sticky; top: 0; }
+  .sb-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; }
+  .sb-user { margin-top: 0; padding-left: 0; }
+  .sb-scope-badge { margin: 10px 20px; }
+  .sb-quest-btn { margin: 10px 20px; width: calc(100% - 40px); }
+  .nav-menu { display: flex; flex-direction: row; overflow-x: auto; padding: 10px 20px; white-space: nowrap; gap: 12px; }
+  .nav-item { width: auto; flex-shrink: 0; margin-bottom: 0; border-left: none; border-bottom: 3px solid transparent; }
+  .nav-item.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+
+  .static-alert-bar { flex-direction: column; align-items: stretch; }
+  .topbar { flex-direction: column; align-items: flex-start; height: auto; padding: 16px 20px; gap: 12px; }
+  .topbar-r { width: 100%; flex-wrap: wrap; }
+  .content { padding: 16px 20px; overflow: visible; }
+
+  .char-grid { grid-template-columns: repeat(2, 1fr); }
+  .reminders-box { grid-template-columns: 1fr; }
+  .panel-wrap, .secret-wrap { grid-template-columns: 1fr; }
+  .modal-2col { grid-template-columns: 1fr; }
+  .dy-grid { grid-template-columns: 1fr; }
+  .milestone-tracker { flex-direction: column; }
+
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-search { width: 100%; }
+  #groupFilters { flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .view-toggles { margin-left: 0; display: flex; width: 100%; }
+  .v-btn { flex: 1; text-align: center; }
+
+  .list-row { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; position: relative; padding-bottom: 35px;}
+  .list-row > div { width: 100%; }
+  .list-row > .btn-icon { position: absolute; bottom: 10px; right: 14px; margin-top: 0; }
+  .list-row > span:nth-of-type(2) { position: absolute; bottom: 14px; left: 22px; margin-top: 0; }
+
+  .qc-body { flex-direction: column; }
+  .qc-right { width: 100%; }
+  .quest-card { width: 95%; max-height: 95vh; }
+  .modal-content { width: 95%; max-width: none; padding: 20px; }
+  
+  .goal-head { flex-direction: column; align-items: flex-start; }
+  .goal-status { margin-top: 8px; }
+
+  .export-btns { display: flex !important; flex-direction: column !important; }
+}
+</style>
+
 </body>
 </html>
